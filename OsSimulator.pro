@@ -20,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     include/Common/Common.h \
+    include/DeviceManager/DeviceManager.h \
     include/DeviceManager/DiskManager.h \
     include/FileManager/FileManager.h \
     include/MemoryManager/MemoryManager.h \

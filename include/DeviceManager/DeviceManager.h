@@ -1,5 +1,5 @@
-#ifndef DEVICE_MANAGER_H
-#define DEVICE_MANAGER_H
+#ifndef DEVICEMANAGER_H
+#define DEVICEMANAGER_H
 #include "include/Common/Common.h"
 namespace os {
     class DeviceManager {
@@ -12,5 +12,4 @@ namespace os {
         int UpdateTime();
     };
 }
-
-#endif //DEVICE_MANAGER_H
+#endif // DEVICEMANAGER_H
