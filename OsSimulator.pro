@@ -10,6 +10,10 @@ CONFIG += c++17
 
 SOURCES += \
     src/UI/mainwindow.cpp \
+    src/FileManager/FileManager.cpp \
+    src/MemoryManager/MemoryManager.cpp \
+    src/ProcessManager/ProcessManager.cpp \
+    src/DeviceManager/DeviceManager.cpp \
     src/main.cpp
 
 HEADERS += \
