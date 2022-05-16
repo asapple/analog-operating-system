@@ -17,6 +17,7 @@ HEADERS += \
     include/DeviceManager/DiskManager.h \
     include/FileManager/FileManager.h \
     include/MemoryManager/MemoryManager.h \
+    include/ProcessManager/CPU.h \
     include/ProcessManager/Interupt.h \
     include/ProcessManager/ProcessManager.h \
     include/UI/mainwindow.h \

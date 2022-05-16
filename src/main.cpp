@@ -1,5 +1,6 @@
 #include "include/UI/mainwindow.h"
-
+#include "include/ProcessManager/CPU.h"
+#include <QDebug>
 #include <QApplication>
 
 int main(int argc, char *argv[])
