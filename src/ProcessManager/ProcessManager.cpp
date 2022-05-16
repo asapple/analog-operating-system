@@ -4,6 +4,7 @@
 #include "include/ProcessManager/Process.h"
 #include "include/ProcessManager/ProcessManager.h"
 #include "include/MemoryManager/MemoryManager.h"
+#include "include/DeviceManager/DeviceManager.h"
 
 namespace os {
 ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, SchedulerType type):
@@ -20,10 +21,19 @@ ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, Scheduler
         process_list_[pid].pid_ = pid;
     }
 }
+
 ProcessManager& ProcessManager::Instance(int kMaxProcessNum, bool is_preemptive, SchedulerType type) {
     static ProcessManager instance(kMaxProcessNum, is_preemptive, type);
     return instance;
 }
+
+void ProcessManager::UpdateTime() {
+    cur_time_++;
+    if (run_process_ > 0) {
+        process_list_[run_process_].run_time_++;
+    }
+}
+
 int ProcessManager::Execute(QString file_name) {
     pid_t pid;
     for (pid = 0; pid < kMaxProcessNum_; pid++) {
@@ -35,8 +45,69 @@ int ProcessManager::Execute(QString file_name) {
     if (pid == kMaxProcessNum_) {
         return -1;
     }
-    //TODO: MemoryManager::InitMemory();
+    int size = MemoryManager::Instance().InitMemory(pid, file_name);
+    if (size <= 0) {
+        MemoryManager::Instance().ReleaseMemory(pid);
+        process_list_[pid].state_ = ProcessState::UNUSED;
+        return -1+size;
+    }
+    process_list_[pid].size_ += size;
+    process_list_[pid].start_time_ = cur_time_;
     scheduler_->PushProcess(pid);
+    return 0;
+}
+
+int ProcessManager::Fork(pid_t ppid) {
+    pid_t pid;
+    for (pid = 0; pid < kMaxProcessNum_; pid++) {
+        if (process_list_[pid].state_ == ProcessState::UNUSED) {
+            break;
+        }
+    }
+    if (pid == kMaxProcessNum_) {
+        return -1;
+    }
+    // TODO: ShareMemory
+    // int size = MemoryManager::Instance().ShareMemory(pid, ppid);
+//    if (size <= 0) {
+//        MemoryManager::Instance().ReleaseMemory(pid);
+//        process_list_[pid].state_ = ProcessState::UNUSED;
+//        return -1+size;
+//    }
+    process_list_[pid] = process_list_[ppid];
+    process_list_[pid].pid_ = pid;
+    process_list_[pid].ppid_ = ppid;
+    process_list_[pid].state_ = ProcessState::UNUSED;
+    process_list_[pid].start_time_ = cur_time_;
+    process_list_[pid].run_time_ = 0;
+    scheduler_->PushProcess(pid);
+    return 0;
+}
+
+int ProcessManager::CheckKilled()
+{
+    // 检查当前正在执行的进程
+    if (process_list_[run_process_].state_ == ProcessState::KILLED) {
+        process_list_[run_process_] = PCB();
+        process_list_[run_process_].pid_ = run_process_;
+    }
+    // 检查就绪队列
+    for (auto pid:GetReadyQueue()) {
+        if (process_list_[pid].state_ == ProcessState::KILLED) {
+            process_list_[pid] = PCB();
+            process_list_[pid].pid_ = pid;
+        }
+        scheduler_->RemoveProcess(pid);
+    }
+    // 检查等待队列
+    for (auto it = wait_queue_.begin(); it != wait_queue_.end(); it++) {
+        if (process_list_[*it].state_ == ProcessState::KILLED) {
+            process_list_[*it] = PCB();
+            process_list_[*it].pid_ = *it;
+        }
+        // TODO 对应设备删除队列
+        DeviceManager::Instance().RemoveProcess(*it);
+    }
     return 0;
 }
 
@@ -80,7 +151,14 @@ pid_t FCFSScheduler::PollProcess() {
     ready_queue_.pop_front();
     return pid;
 }
-
+int FCFSScheduler::RemoveProcess(pid_t pid)
+{
+    if (!hash_table_.contains(pid)) {
+        return -1;
+    }
+    ready_queue_.erase(hash_table_.find(pid).value());
+    return 0;
+}
 const QList<pid_t> FCFSScheduler::GetReadyQueue() {
     return ready_queue_;
 }
@@ -106,7 +184,17 @@ pid_t PriorityScheduler::PollProcess() {
     }
     return pid;
 }
-
+int PriorityScheduler::RemoveProcess(pid_t pid)
+{
+    priority_t pri = ProcessManager::Instance().GetPCB(pid).priority_;
+    if (ready_queue_.contains(pri) && ready_queue_[pri].removeOne(pid)) {
+        if (ready_queue_[pri].empty()) {
+            ready_queue_.remove(pri);
+        }
+        return 0;
+    }
+    return -1;
+}
 const QList<pid_t> PriorityScheduler::GetReadyQueue() {
     QList<pid_t> queue;
     for (auto it = ready_queue_.end()-1; it != ready_queue_.begin(); it--) {

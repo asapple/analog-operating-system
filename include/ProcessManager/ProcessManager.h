@@ -23,6 +23,7 @@ enum class SchedulerType {
 class Scheduler {
 public:
     virtual int PushProcess(pid_t process) = 0;
+    virtual int RemoveProcess(pid_t pid) = 0;
     virtual pid_t PollProcess() = 0;
     virtual const QList<pid_t> GetReadyQueue() = 0;
 };
@@ -44,15 +45,23 @@ private:
     QList<pid_t> wait_queue_;
     // 当前运行进程
     pid_t run_process_;
+    // 当前时间
+    tick_t cur_time_;
+
     ProcessManager(int kMaxProcessNum, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
 public:
     static ProcessManager& Instance(int kMaxProcessNum = 0, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
+
     inline int pushProcess(pid_t pid) { return scheduler_->PushProcess(pid);}
     inline pid_t PollProcess() { return scheduler_->PollProcess(); };
+
     inline PCB& GetPCB(pid_t pid) { return process_list_[pid]; };
     inline const QList<pid_t> GetReadyQueue() { return scheduler_->GetReadyQueue(); };
+    void UpdateTime();
 
+    int CheckKilled();
     int Execute(QString file_name);
+    int Fork(pid_t ppid);
     int Kill(pid_t pid);
     int ProcessState(QVector<PCB>& running_queue, QVector<PCB>& wait_queue, QVector<PCB>& ready_queue);
 };
@@ -64,6 +73,7 @@ private:
 public:
     int PushProcess(pid_t process) override;
     pid_t PollProcess() override;
+    int RemoveProcess(pid_t pid) override;
     const QList<pid_t> GetReadyQueue() override;
 };
 
@@ -73,6 +83,7 @@ private:
 public:
     int PushProcess(pid_t process) override;
     pid_t PollProcess() override;
+    int RemoveProcess(pid_t pid) override;
     const QList<pid_t> GetReadyQueue() override;
 };
 }
