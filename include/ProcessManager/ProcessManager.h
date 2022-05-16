@@ -2,6 +2,13 @@
 #define PROCESSMANAGER_H
 #include "include/Common/Common.h"
 namespace os {
+    enum class ProcessState {
+
+            READY,
+            RUNNING,
+            WAIT,
+            KILLED,
+    };
     class ProcessManager {
     public:
 
