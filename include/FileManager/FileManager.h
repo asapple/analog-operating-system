@@ -10,8 +10,8 @@
     if (file.open(QFile::ReadOnly | QIODevice::Text)) {
         while (!file.atEnd()) {
             QByteArray str = file.readLine();
-            os::Instruction ins(str);
-            data_.append(static_cast<QByteArray>(ins));
+            os::Instruction ins(str); // 从字符数组或字符串中获取指令
+            data_.append(static_cast<QByteArray>(ins)); //将指令保存到数组里
         }
         file.close();
     } else {
