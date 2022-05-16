@@ -30,6 +30,7 @@ public:
  * @brief 进程管理者类，采用单例模式，管理、调度进程资源
  */
 class ProcessManager {
+    friend class CPU;
 private:
     // 最大进程数
     int kMaxProcessNum_;
@@ -46,6 +47,7 @@ private:
     ProcessManager(int kMaxProcessNum, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
 public:
     static ProcessManager& Instance(int kMaxProcessNum = 0, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
+    inline int pushProcess(pid_t pid) { return scheduler_->PushProcess(pid);}
     inline pid_t PollProcess() { return scheduler_->PollProcess(); };
     inline PCB& GetPCB(pid_t pid) { return process_list_[pid]; };
     inline const QList<pid_t> GetReadyQueue() { return scheduler_->GetReadyQueue(); };
@@ -67,7 +69,6 @@ public:
 
 class PriorityScheduler: public Scheduler {
 private:
-    QHash<pid_t, QList<pid_t>::iterator> hash_table_;
     QMap<priority_t, QList<pid_t>> ready_queue_;
 public:
     int PushProcess(pid_t process) override;

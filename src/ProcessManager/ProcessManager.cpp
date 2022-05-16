@@ -9,7 +9,7 @@ namespace os {
 ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, SchedulerType type):
     kMaxProcessNum_(kMaxProcessNum),
     is_preemptive_(is_preemptive),
-    process_list_(kMaxProcessNum)
+    process_list_(kMaxProcessNum+1)
 {
     if (type == SchedulerType::FCFS) {
         scheduler_.reset(static_cast<Scheduler*>(new FCFSScheduler));
@@ -56,8 +56,8 @@ int ProcessManager::ProcessState(QVector<PCB>& running_queue, QVector<PCB>& wait
         ready_queue.append(process_list_[pid]);
     }
     // wait queue
-    for (auto pid:wait_queue_) {
-        wait_queue.append(process_list_[pid]);
+    for (auto it = wait_queue_.begin(); it != wait_queue_.end(); it++) {
+        wait_queue.append(process_list_[*it]);
     }
     return 0;
 }
@@ -67,11 +67,16 @@ int FCFSScheduler::PushProcess(pid_t pid) {
         return -1;
     }
     ready_queue_.push_back(pid);
+    hash_table_.insert(pid,ready_queue_.end()-1);
     return 0;
 }
 
 pid_t FCFSScheduler::PollProcess() {
+    if (ready_queue_.empty()) {
+        return -1;
+    }
     pid_t pid = ready_queue_.front();
+    hash_table_.remove(pid);
     ready_queue_.pop_front();
     return pid;
 }
@@ -90,11 +95,14 @@ int PriorityScheduler::PushProcess(pid_t pid) {
 }
 
 pid_t PriorityScheduler::PollProcess() {
-    auto it = ready_queue_.end()-1;
-    pid_t pid = it.value().front();
-    it.value().pop_front();
-    if (it.value().empty()) {
-        ready_queue_.erase(it);
+    if (ready_queue_.empty()) {
+        return -1;
+    }
+    auto it = ready_queue_.last();
+    pid_t pid = it.front();
+    it.pop_front();
+    if (it.empty()) {
+        ready_queue_.remove(ready_queue_.lastKey());
     }
     return pid;
 }
