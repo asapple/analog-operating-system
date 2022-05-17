@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QByteArray>
 // TODO: 从现实中的某个文件系统根目录读取目录树，并拷贝到模拟操作系统的文件系统中
 // TODO: 读取现实操作系统中的文件的时候，逐行读取，转化为一个指令
 /*
@@ -73,9 +74,10 @@ namespace os
     private:
         QVector<FCB> fm_fcb_;
         QVector<QString> cwd_;
-
+        bool init_flag_ = true;
     public:
         FileManager();
+        ~FileManager();
 
         QString List();
         int ChangeDirectory(const QString &directory_name);
