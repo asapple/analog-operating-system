@@ -10,11 +10,12 @@ CONFIG += c++17
 
 SOURCES += \
     src/ProcessManager/CPU.cpp \
-#    src/ProcessTest.cpp \
+    #src/ProcessTest.cpp \
     src/ProcessManager/Interupt.cpp \
     src/UI/mainwindow.cpp \
     src/FileManager/FileManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
+    src/MemoryTest.cpp \
     src/ProcessManager/ProcessManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
     src/main.cpp
