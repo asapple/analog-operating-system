@@ -5,14 +5,15 @@
 #include <QApplication>
 #include <QDebug>
 void TesFIFOScheduler();
-void void TestPriorityScheduler();
+void TestPriorityScheduler();
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    TestProcessManagerPriorityScheduler();
+    TesFIFOScheduler();
+    TestPriorityScheduler();
     return a.exec();
 }
 
