@@ -340,9 +340,9 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="page1">
+     <widget class="QWidget" name="shell_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QTextBrowser" name="echo_textBrowser"/>
@@ -366,14 +366,14 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page2">
+     <widget class="QWidget" name="mem_page">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QTextBrowser" name="mem_textBrowser"/>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page3">
+     <widget class="QWidget" name="proc_page">
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="ready_label">
@@ -442,7 +442,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page4">
+     <widget class="QWidget" name="desk_page">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
         <widget class="QLabel" name="tot_label">
@@ -470,17 +470,17 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page5">
+     <widget class="QWidget" name="device_page">
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <widget class="QLabel" name="IO_label">
+        <widget class="QLabel" name="device__label">
          <property name="text">
           <string>I/O</string>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QTextBrowser" name="IO_textBrowser"/>
+        <widget class="QTextBrowser" name="device_textBrowser"/>
        </item>
       </layout>
      </widget>

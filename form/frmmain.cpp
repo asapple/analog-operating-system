@@ -136,3 +136,55 @@ void frmMain::on_btnMenu_Close_clicked()
 {
     close();
 }
+
+void frmMain::on_exec_pushButton_clicked()
+{
+    ui->cmd_lineEdit->clear();// 清空命令行
+    QStringList cmd = ui->cmd_lineEdit->text().split(" ");
+    if(cmd.empty())
+        return;
+    else if (cmd[0]=="ls") {
+        // 调用文件系统的FileManager::List()方法
+        QString str="";
+
+        ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="cd") {
+        // 调用文件系统的FileManager::ChangeDirectory()方法
+        QString str="";
+
+        ui->pwd_label->setText(str);
+    }else if (cmd[0]=="clear") {
+        ui->echo_textBrowser->clear();
+    }else if (cmd[0]=="rm") {
+        // 调用文件系统的FileManager::RemoveFile()方法
+        QString str="";
+        ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="rmdir") {
+            // 调用文件系统的FileManager::RemoveDirectory()方法
+            QString str="";
+            ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="mkdir") {
+    // 调用文件系统的FileManager::MakeDirectory()方法
+    QString str="";
+    ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="mkfile") {
+        // 调用文件系统的FileManager::MakeFile()方法
+        QString str="";
+        ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="exec") {
+        // 调用文件系统的FileManager::Execute()方法
+        QString str="";
+        ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="kill") {
+        // 调用文件系统的FileManager::Kill()方法
+        QString str="";
+        ui->echo_textBrowser->append(str);
+    }else if (cmd[0]=="ps") {
+        // 调用文件系统的FileManager::ProcessState()方法
+        QString str="";
+        ui->echo_textBrowser->append(str);
+    }else{
+        ui->echo_textBrowser->append(QString("==>command not definded;"));
+    }
+    return;
+}
