@@ -7,6 +7,12 @@
 #include "include/DeviceManager/DeviceManager.h"
 
 namespace os {
+/**
+ * @brief ProcessManager::ProcessManager 进程管理系统构造函数
+ * @param kMaxProcessNum 最大进程数
+ * @param is_preemptive 就绪队列调度是否抢占
+ * @param type 就绪队列调度的方法
+ */
 ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, SchedulerType type):
     kMaxProcessNum_(kMaxProcessNum),
     is_preemptive_(is_preemptive),
@@ -21,19 +27,32 @@ ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, Scheduler
         process_list_[pid].pid_ = pid;
     }
 }
-
+/**
+ * @brief ProcessManager::Instance 返回进程管理系统单例
+ * @param kMaxProcessNum 最大进程数，仅在初始化时设置
+ * @param is_preemptive 就绪队列调度是否抢占，仅在初始化时设置
+ * @param type 就绪队列调度的方法，仅在初始化时设置
+ * @return 进程管理系统单例
+ */
 ProcessManager& ProcessManager::Instance(int kMaxProcessNum, bool is_preemptive, SchedulerType type) {
     static ProcessManager instance(kMaxProcessNum, is_preemptive, type);
     return instance;
 }
-
+/**
+ * @brief ProcessManager::UpdateTime
+ * 更新时序
+ */
 void ProcessManager::UpdateTime() {
     cur_time_++;
     if (run_process_ > 0) {
         process_list_[run_process_].run_time_++;
     }
 }
-
+/**
+ * @brief ProcessManager::Execute
+ * @param file_name 可执行文件名
+ * @return 返回码，成功返回0，失败返回-1
+ */
 int ProcessManager::Execute(QString file_name) {
     pid_t pid;
     for (pid = 0; pid < kMaxProcessNum_; pid++) {
@@ -56,7 +75,11 @@ int ProcessManager::Execute(QString file_name) {
     scheduler_->PushProcess(pid);
     return 0;
 }
-
+/**
+ * @brief ProcessManager::Fork
+ * @param ppid 父进程号
+ * @return 成功返回0，失败返回-1，内存分配出错返回具体的返回码
+ */
 int ProcessManager::Fork(pid_t ppid) {
     pid_t pid;
     for (pid = 0; pid < kMaxProcessNum_; pid++) {
@@ -67,13 +90,12 @@ int ProcessManager::Fork(pid_t ppid) {
     if (pid == kMaxProcessNum_) {
         return -1;
     }
-    // TODO: ShareMemory
-    // int size = MemoryManager::Instance().ShareMemory(pid, ppid);
-//    if (size <= 0) {
-//        MemoryManager::Instance().ReleaseMemory(pid);
-//        process_list_[pid].state_ = ProcessState::UNUSED;
-//        return -1+size;
-//    }
+    int size = MemoryManager::Instance().ForkMemory(pid, ppid);
+    if (size < 0) {
+        MemoryManager::Instance().ReleaseMemory(pid);
+        process_list_[pid].state_ = ProcessState::UNUSED;
+        return -1+size;
+    }
     process_list_[pid] = process_list_[ppid];
     process_list_[pid].pid_ = pid;
     process_list_[pid].ppid_ = ppid;
@@ -83,7 +105,11 @@ int ProcessManager::Fork(pid_t ppid) {
     scheduler_->PushProcess(pid);
     return 0;
 }
-
+/**
+ * @brief ProcessManager::CheckKilled
+ * 检查是否有需要回收的进程资源
+ * @return 返回码，成功返回0，失败返回-1
+ */
 int ProcessManager::CheckKilled()
 {
     // 检查当前正在执行的进程
@@ -110,7 +136,12 @@ int ProcessManager::CheckKilled()
     }
     return 0;
 }
-
+/**
+ * @brief ProcessManager::Kill
+ * 终止进程
+ * @param pid 进程号
+ * @return 返回码，成功返回0，若进程已经被终止则失败返回-1
+ */
 int ProcessManager::Kill(pid_t pid) {
     if (process_list_[pid].state_ == ProcessState::UNUSED || process_list_[pid].state_ == ProcessState::KILLED) {
         return -1;
@@ -118,7 +149,14 @@ int ProcessManager::Kill(pid_t pid) {
     process_list_[pid].state_ = ProcessState::KILLED;
     return 0;
 }
-
+/**
+ * @brief ProcessManager::ProcessState
+ * 展示设备状态
+ * @param running_queue 执行队列引用，用于返回当前执行队列
+ * @param wait_queue 等待队列引用， 用于返回当前等待队列
+ * @param ready_queue 就绪队列引用，用于返回当前就绪队列
+ * @return 返回码，成功返回0
+ */
 int ProcessManager::ProcessState(QVector<PCB>& running_queue, QVector<PCB>& wait_queue, QVector<PCB>& ready_queue) {
     // running queue
     running_queue.append(process_list_[run_process_]);
@@ -132,7 +170,11 @@ int ProcessManager::ProcessState(QVector<PCB>& running_queue, QVector<PCB>& wait
     }
     return 0;
 }
-
+/**
+ * @brief FCFSScheduler::PushProcess
+ * @param pid 进程号
+ * @return 返回码，成功返回0，若该进程已经在队列中则返回-1
+ */
 int FCFSScheduler::PushProcess(pid_t pid) {
     if (hash_table_.contains(pid)) {
         return -1;
@@ -141,7 +183,11 @@ int FCFSScheduler::PushProcess(pid_t pid) {
     hash_table_.insert(pid,ready_queue_.end()-1);
     return 0;
 }
-
+/**
+ * @brief FCFSScheduler::PollProcess
+ * 获得下一个待执行进程
+ * @return 返回码/进程号，若队列为空则返回-1，否则返回进程号
+ */
 pid_t FCFSScheduler::PollProcess() {
     if (ready_queue_.empty()) {
         return -1;
@@ -151,6 +197,12 @@ pid_t FCFSScheduler::PollProcess() {
     ready_queue_.pop_front();
     return pid;
 }
+/**
+ * @brief FCFSScheduler::RemoveProcess
+ * 从队列中移除某个进程
+ * @param pid 进程号
+ * @return 返回码，成功删除返回0，若已经被移除了则返回-1
+ */
 int FCFSScheduler::RemoveProcess(pid_t pid)
 {
     if (!hash_table_.contains(pid)) {
@@ -159,10 +211,19 @@ int FCFSScheduler::RemoveProcess(pid_t pid)
     ready_queue_.erase(hash_table_.find(pid).value());
     return 0;
 }
+/**
+ * @brief FCFSScheduler::GetReadyQueue
+ * 以列表形式返回就绪队列
+ * @return 就绪队列，按照优先级先后排列
+ */
 const QList<pid_t> FCFSScheduler::GetReadyQueue() {
     return ready_queue_;
 }
-
+/**
+ * @brief PriorityScheduler::PushProcess
+ * @param pid 进程号
+ * @return 返回码，成功返回0，若该进程已经在队列中则返回-1
+ */
 int PriorityScheduler::PushProcess(pid_t pid) {
     if (ready_queue_.contains(pid)) {
         return -1;
@@ -171,7 +232,11 @@ int PriorityScheduler::PushProcess(pid_t pid) {
     ready_queue_[pcb.priority_].append(pid);
     return 0;
 }
-
+/**
+ * @brief PriorityScheduler::PollProcess
+ * 获得下一个待执行进程
+ * @return 返回码/进程号，若队列为空则返回-1，否则返回进程号
+ */
 pid_t PriorityScheduler::PollProcess() {
     if (ready_queue_.empty()) {
         return -1;
@@ -184,6 +249,12 @@ pid_t PriorityScheduler::PollProcess() {
     }
     return pid;
 }
+/**
+ * @brief PriorityScheduler::RemoveProcess
+ * 从队列中删除进程
+ * @param pid 待删除的进程号
+ * @return 返回码，成功返回0，若已经被删除了则返回-1
+ */
 int PriorityScheduler::RemoveProcess(pid_t pid)
 {
     priority_t pri = ProcessManager::Instance().GetPCB(pid).priority_;
@@ -195,6 +266,11 @@ int PriorityScheduler::RemoveProcess(pid_t pid)
     }
     return -1;
 }
+/**
+ * @brief PriorityScheduler::GetReadyQueue
+ * 获得当前进程队列
+ * @return 当前进程队列，按照优先级先后排列
+ */
 const QList<pid_t> PriorityScheduler::GetReadyQueue() {
     QList<pid_t> queue;
     for (auto it = ready_queue_.end()-1; it != ready_queue_.begin(); it--) {
