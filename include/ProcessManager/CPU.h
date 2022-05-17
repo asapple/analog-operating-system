@@ -7,6 +7,12 @@
 #include "include/ProcessManager/Process.h"
 
 namespace os {
+    /**
+     * @brief CPU类，单独作为一个线程运行。
+     * 维护整个系统的时序逻辑
+     * 负责执行进程的指令
+     * 负责中断处理和调用
+     */
     class CPU: public QThread {
         Q_OBJECT
     private:

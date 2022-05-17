@@ -12,6 +12,7 @@
 namespace os {
 class ProcessManager;
 class Schedular;
+
 enum class SchedulerType {
     FCFS,
     RR,
@@ -68,7 +69,9 @@ public:
 
 class FCFSScheduler: public Scheduler {
 private:
+    // 根据进程号索引到对应的迭代器
     QHash<pid_t, QList<pid_t>::Iterator> hash_table_;
+    // 就绪队列
     QList<pid_t> ready_queue_;
 public:
     int PushProcess(pid_t process) override;
@@ -79,6 +82,7 @@ public:
 
 class PriorityScheduler: public Scheduler {
 private:
+    // 优先级就绪队列
     QMap<priority_t, QList<pid_t>> ready_queue_;
 public:
     int PushProcess(pid_t process) override;

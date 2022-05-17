@@ -15,7 +15,7 @@ SOURCES += \
     src/UI/mainwindow.cpp \
     src/FileManager/FileManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
-    src/MemoryTest.cpp \
+#    src/MemoryTest.cpp \
     src/ProcessManager/ProcessManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
     src/main.cpp

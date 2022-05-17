@@ -10,7 +10,12 @@ namespace os {
 CPU::CPU(int time_slot)
     : time_slot_(time_slot)
 {}
-
+/**
+ * @brief CPU::run
+ * 线程执行函数，CPU不断循环该周期
+ * 负责控制系统的时序节拍
+ * 负责进程代码的执行和处理
+ */
 void CPU::run() {
     while (!isInterruptionRequested()) {
         ProcessManager& pm = ProcessManager::Instance();
@@ -119,7 +124,10 @@ int CPU::ExecuteInstruction(PCB& pcb)
     }
     return 0;
 }
-
+/**
+ * @brief CPU::~CPU
+ * 析构函数，在这里关闭CPU的主线程
+ */
 CPU::~CPU() {
     requestInterruption();
     quit();
