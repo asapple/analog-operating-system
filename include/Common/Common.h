@@ -7,7 +7,6 @@
 namespace os {
 using pid_t = int; // Process ID
 using dev_t = int; // Device ID
-using inode_t = int; // INode
 using priority_t = int; // Priority
 using tick_t = int;
 inline constexpr int MEMORY_CODE_INIT =  2; // 进程初始化时分配的代码页数量
@@ -20,6 +19,7 @@ inline constexpr int MEMORY_PAGE_SIZE = 8; // 一个内存页的大小，单位�
 inline constexpr int MEMORY_INSTR_SIZE = 8; // 指令长度，单位为字节
 
 // File const
+using inode_t = int; // INode
 
 // Device const
 inline constexpr int DEVICE_SIZE = 3; // 总设备个数
