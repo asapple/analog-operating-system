@@ -18,5 +18,7 @@ inline constexpr int MEMORY_TOTAL_SIZE = 512; // 内存总大小，单位为页�
 inline constexpr int MEMORY_ADDR_SIZE = 16; // 地址操作数的位数
 inline constexpr int MEMORY_PAGE_SIZE = 8; // 一个内存页的大小，单位为字节，必须是指令长度的整数倍
 inline constexpr int MEMORY_INSTR_SIZE = 8; // 指令长度，单位为字节
+
+inline constexpr int DEVICE_SIZE = 3; // 总设备个数
 }
 #endif // COMMON_H

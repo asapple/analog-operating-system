@@ -40,3 +40,7 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
+// 在.pro 中增加如下配置 ==》 Qt默认是不开启异常的
+CONFIG += exception
