@@ -222,7 +222,9 @@ int MemoryManager::InitMemory(pid_t pid, const QString& file_name)
     for (int i = 0; i < initpages.size(); i++) { // 往内存中载入指令
         int offset = MEMORY_INSTR_SIZE * i; // 第i条指令的文件偏移量
         int page = offset / MEMORY_PAGE_SIZE; // 计算第i条指令的虚拟页号
-        page == 0 ? : offset = offset % page; // 计算第i条指令的页内偏移
+        if (page != 0) {
+            offset = offset % page; // 计算第i条指令的页内偏移
+        }
         int error = ReadBytes(file_name, page, offset, MEMORY_INSTR_SIZE, content); // 从文件中复制一条指令出来
         if (error == 0) // 复制完全成功，载入内存
             CopyBytes(memory, initpages[page]*MEMORY_PAGE_SIZE+offset, content, 0, MEMORY_INSTR_SIZE);

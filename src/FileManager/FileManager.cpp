@@ -24,6 +24,7 @@ int FileManager::MakeDirectory(const QString &directory_name)
     FCB fcb = FCB(inode, directory_name);
 
     fm_fcb_.push_back(fcb);
+    return 0;
 }
 
 FileManager::FileManager()
