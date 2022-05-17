@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 //    QApplication a(argc, argv);
 //    MainWindow w;
 //    w.show();
-////    TestProcessManagerPriorityScheduler();
+// //    TestProcessManagerPriorityScheduler();
 //    return a.exec();
     //设置不应用操作系统设置比如字体
     QApplication::setDesktopSettingsAware(false);
