@@ -2,6 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
 CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -32,9 +33,18 @@ HEADERS += \
     include/ProcessManager/Process.h \
     include/ProcessManager/ProcessManager.h \
     include/UI/mainwindow.h \
+    head.h
 
 FORMS += \
     mainwindow.ui
+
+RESOURCES += other/main.qrc
+RESOURCES += core_qss/qss.qrc
+INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD/form
+include ($$PWD/form/form.pri)
+INCLUDEPATH += $$PWD/core_common
+include ($$PWD/core_common/core_common.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
