@@ -20,7 +20,7 @@ PageTable::PageTable(QVector<frame_t> initpages, pid_t id) :
         table.insert(i, item); // 插入hash表
     }
     for (int i = 0; i < initpages.size(); i++) {
-        table[i].SetAddr(initpages[i]);
+        table[i].SetFrame(initpages[i]);
         table[i].SetVi(true);
         code_queue.append(i); // 加入牺牲队列
     } // 前n个页为代码段，初始化时分配
@@ -47,7 +47,7 @@ PageTable& PageTable::operator=(const PageTable& p)
 
 void PageTable::AddPage(page_t vaddress, frame_t paddress)
 {
-    table[vaddress].SetAddr(paddress);
+    table[vaddress].SetFrame(paddress);
     table[vaddress].SetVi(true);
     occupy += 1;
 }
@@ -56,9 +56,9 @@ frame_t PageTable::ReplaceCode(page_t new_vaddress)
 {
     page_t out_page = code_queue[0]; // 找到牺牲页
     code_queue.pop_front(); // 从牺牲队列中将其删除
-    frame_t replace_frame = table.find(out_page).value().GetAddr(); // 牺牲页的物理帧号
+    frame_t replace_frame = table.find(out_page).value().GetFrame(); // 牺牲页的物理帧号
     table[out_page].SetVi(false); // 牺牲页失效
-    table[new_vaddress].SetAddr(replace_frame); // 帧号与新虚拟页号绑定
+    table[new_vaddress].SetFrame(replace_frame); // 帧号与新虚拟页号绑定
     table[new_vaddress].SetVi(true); // 新页生效
     return replace_frame;
 }
@@ -67,9 +67,9 @@ frame_t PageTable::ReplaceData(page_t new_vaddress)
 {
     page_t out_page = data_queue[0]; // 找到牺牲页
     data_queue.pop_front(); // 从牺牲队列中将其删除
-    frame_t replace_frame = table.find(out_page).value().GetAddr(); // 牺牲页的物理帧号
+    frame_t replace_frame = table.find(out_page).value().GetFrame(); // 牺牲页的物理帧号
     table[out_page].SetVi(false); // 牺牲页失效
-    table[new_vaddress].SetAddr(replace_frame); // 帧号与新虚拟页号绑定
+    table[new_vaddress].SetFrame(replace_frame); // 帧号与新虚拟页号绑定
     table[new_vaddress].SetVi(true); // 新页生效
     return replace_frame;
 }
@@ -86,7 +86,7 @@ int PageTable::VisitCode(page_t vaddress, frame_t& frame)
             result = 1;
         }
     } else { // 页表中找到了该页
-        frame = table[vaddress].GetAddr(); // 返回该页的物理帧号
+        frame = table[vaddress].GetFrame(); // 返回该页的物理帧号
         result = 0;
     }
     // 找到了页则会访问，没找到则会调页后访问，最终都会更新LRU
@@ -112,7 +112,7 @@ int PageTable::VisitData(page_t vaddress, frame_t& frame)
             result = 1;
         }
     } else { // 页表中找到了该页
-        frame = table[vaddress].GetAddr(); // 返回该页的物理帧号
+        frame = table[vaddress].GetFrame(); // 返回该页的物理帧号
         result = 0;
     }
     // 找到了页则会访问，没找到则会调页后访问，最终都会更新LRU
@@ -131,7 +131,7 @@ QVector<frame_t> PageTable::PrintOccupying()
     QVector<frame_t> result;
     for (auto iter = table.begin(); iter != table.end(); ++iter) { // 遍历页表
         if (iter.value().GetVi()) // 有效页
-            result.append(iter.value().GetAddr());
+            result.append(iter.value().GetFrame());
     }
     return result;
 }
@@ -196,6 +196,7 @@ int MemoryManager::ReadBytes(QString file_name, page_t page, offset_t offset, si
     int error = ReadFile(file_name, source); // 读取文件
     if (error) return error; // 错误码不为0，上报错误
     int start = page * 8 + offset; // 计算相对与文件头的偏移量
+    if (start >= source.size()) return 254; // 起始地址超出文件范围
     content = source.mid(start, size); // 复制
     if (start + size > source.size())
         return 255; // 复制不完全
@@ -223,10 +224,12 @@ int MemoryManager::InitMemory(pid_t pid, const QString& file_name)
         int error = ReadBytes(file_name, page, offset, MEMORY_INSTR_SIZE, content); // 从文件中复制一条指令出来
         if (error == 0) // 复制完全成功，载入内存
             CopyBytes(memory, initpages[page]*MEMORY_PAGE_SIZE+offset, content, 0, MEMORY_INSTR_SIZE);
+        else if (error == 254)
+            break; // 寻址地址超出文件范围
         else if (error == 255)
-            return -3; // 剩余文件不足一条指令的大小
+            return -4; // 剩余文件不足一条指令的大小
         else
-            return -4; // 其他错误
+            return -5; // 其他错误
     }
 
     PageTable pt(initpages, pid); // 初始化页表
@@ -265,10 +268,12 @@ int MemoryManager::GetCode(pid_t pid, size_t virt_addr, QByteArray& content)
         if (read_error == 0) {// 复制完全成功，返回指令
             CopyBytes(memory, frame*MEMORY_PAGE_SIZE+offset, code, 0, MEMORY_PAGE_SIZE); // 覆盖牺牲帧
             content = code;
+        } else if (read_error == 254) {
+            return -3; // 寻址地址超出文件范围
         } else if (read_error == 255) {
-            return -3; // 剩余文件不足一条指令的大小
+            return -4; // 剩余文件不足一条指令的大小
         } else {
-            return -4; // 其他错误
+            return -5; // 其他错误
         }
     } else if (visit_error == 2){ // 指令不在内存中，需要分配一个新的物理帧
         QVector<frame_t> new_frame;
@@ -282,10 +287,12 @@ int MemoryManager::GetCode(pid_t pid, size_t virt_addr, QByteArray& content)
                 CopyBytes(memory, new_frame[0]*MEMORY_PAGE_SIZE+offset, code, 0, MEMORY_INSTR_SIZE); // 写入新帧
                 pt_iter->AddPage(page, new_frame[0]); // 将新帧加入页表
                 content = code;
+            } else if (read_error == 254) {
+                return -3; // 寻址地址超出文件范围
             } else if (read_error == 255) {
-                return -3; // 剩余文件不足一条指令的大小
+                return -4; // 剩余文件不足一条指令的大小
             } else {
-                return -4; // 其他错误
+                return -5; // 其他错误
             }
         }
     }
@@ -337,7 +344,7 @@ int MemoryManager::ForkMemory(pid_t pid, pid_t ppid)
         if (i->GetVi()) { // 发现已缓存的页
             if (GetFrame(1, new_frame)) return -2; // 错误，内存不足
             bitmap[new_frame.back()] = pid; // 更改位图，标识占用
-            CopyBytes(memory, new_frame.back()*MEMORY_PAGE_SIZE, memory, i->GetAddr()*MEMORY_PAGE_SIZE, MEMORY_PAGE_SIZE); // 将该帧内容复制到新帧
+            CopyBytes(memory, new_frame.back()*MEMORY_PAGE_SIZE, memory, i->GetFrame()*MEMORY_PAGE_SIZE, MEMORY_PAGE_SIZE); // 将该帧内容复制到新帧
             pt_pid.AddPage(i.key(), new_frame.back()); // 添加到新页表
         }
     }
@@ -371,6 +378,11 @@ int MemoryManager::ReleaseMemory(pid_t pid)
 {
     auto pt_iter = pt_meta.find(pid);
     if (pt_iter == pt_meta.end()) return -1; // 错误，该进程没有页表
+    QHash<page_t, PtItem> table = pt_iter->GetTable();
+    for (auto i = table.begin(); i != table.end(); i++) { // 遍历页表内容
+        if (i->GetVi()) // 解除对有效页的占用
+            bitmap[i->GetFrame()] = -1;
+    }
     pt_iter->~PageTable(); // 析构页表
     pt_meta.erase(pt_iter); // 删除映射
     return 0;

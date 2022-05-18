@@ -1,7 +1,7 @@
 ﻿#include "frmmain.h"
 #include "ui_frmmain.h"
-#include "iconhelper.h"
-#include "quihelper.h"
+#include "UI/core_common/iconhelper.h"
+#include "UI/core_common/quihelper.h"
 
 frmMain::frmMain(QWidget *parent) : QDialog(parent), ui(new Ui::frmMain)
 {

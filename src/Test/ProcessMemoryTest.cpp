@@ -15,6 +15,8 @@ int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
 {
     content.append(Instruction(InsType::COMPUTE, 2));
     content.append(Instruction(InsType::FORK, 2));
+    content.append(Instruction(InsType::FORK, 2));
+    content.append(Instruction(InsType::COMPUTE, 3));
     content.append(Instruction(InsType::ACCESS, 33));
     content.append(Instruction(InsType::QUIT));
     return 0;
@@ -61,8 +63,8 @@ void TestRRExec()
 
 void TestFork()
 {
-    ProcessManager& pm = ProcessManager::Instance(500,true);
-    CPU cpu(10);
+    ProcessManager& pm = ProcessManager::Instance(10,false);
+    CPU cpu(500);
     cpu.start();
     pm.Execute("t1");
     std::this_thread::sleep_for(std::chrono::seconds(1000));
