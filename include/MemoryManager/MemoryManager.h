@@ -136,8 +136,9 @@ namespace os {
          */
         int ReleaseMemory(pid_t pid);
         /*
-         * @brief 打印一个进程所占有的物理帧的真号
+         * @brief 通过QVector返回一个进程所占有的物理帧的帧号
          * @param pid 进程的pid号
+         * @param Occupying 接收进程所占物理帧号的容器
          * @return 正确执行时，返回0
          * @return 错误码-1：该进程没有页表
          */
