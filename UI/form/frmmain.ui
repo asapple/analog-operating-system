@@ -357,13 +357,6 @@
        <item>
         <widget class="QLineEdit" name="cmd_lineEdit"/>
        </item>
-       <item>
-        <widget class="QPushButton" name="exec_pushButton">
-         <property name="text">
-          <string>执行</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="mem_page">

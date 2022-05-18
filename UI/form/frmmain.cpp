@@ -49,7 +49,7 @@ void frmMain::initForm()
     ui->labTitle->setText("模拟操作系统");
     this->setWindowTitle(ui->labTitle->text());
 
-    ui->stackedWidget->setStyleSheet("QLabel{font:60px;}");
+    ui->stackedWidget->setStyleSheet("QLabel{font:15px;}");
 
     //单独设置指示器大小
     int addWidth = 20;
@@ -139,7 +139,7 @@ void frmMain::on_btnMenu_Close_clicked()
     close();
 }
 
-void frmMain::on_exec_pushButton_clicked()
+void frmMain::on_cmd_lineEdit_returnPressed()
 {
     QString cmds = ui->cmd_lineEdit->text();
     ui->cmd_lineEdit->clear();// 清空命令行
