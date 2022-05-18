@@ -10,12 +10,12 @@ CONFIG += c++17
 
 SOURCES += \
     src/ProcessManager/CPU.cpp \
-    #src/ProcessTest.cpp \
+    src/ProcessTest.cpp \
     src/ProcessManager/Interupt.cpp \
     src/UI/mainwindow.cpp \
     src/FileManager/FileManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
-#    src/MemoryTest.cpp \
+    #src/MemoryTest.cpp \
     src/ProcessManager/ProcessManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
     src/main.cpp
@@ -42,5 +42,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
-// 在.pro 中增加如下配置 ==》 Qt默认是不开启异常的
+# 在.pro 中增加如下配置 ==》 Qt默认是不开启异常的
 CONFIG += exception

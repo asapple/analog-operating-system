@@ -339,9 +339,9 @@ int MemoryManager::ForkMemory(pid_t pid, pid_t ppid)
     for (auto i = table_ppid.begin(); i != table_ppid.end(); ++i) {
         if (i->GetVi()) { // 发现已缓存的页
             if (GetFrame(1, new_frame)) return -2; // 错误，内存不足
-            bitmap[new_frame[0]] = pid; // 更改位图，标识占用
-            CopyBytes(memory, new_frame[0]*MEMORY_PAGE_SIZE, memory, i->GetAddr()*MEMORY_PAGE_SIZE, MEMORY_PAGE_SIZE); // 将该帧内容复制到新帧
-            pt_pid.AddPage(i.key(), new_frame[0]); // 添加到新页表
+            bitmap[new_frame.back()] = pid; // 更改位图，标识占用
+            CopyBytes(memory, new_frame.back()*MEMORY_PAGE_SIZE, memory, i->GetAddr()*MEMORY_PAGE_SIZE, MEMORY_PAGE_SIZE); // 将该帧内容复制到新帧
+            pt_pid.AddPage(i.key(), new_frame.back()); // 添加到新页表
         }
     }
     pt_pid.SetOccupy(pt_iter->GetOccupy());
@@ -351,6 +351,7 @@ int MemoryManager::ForkMemory(pid_t pid, pid_t ppid)
     pt_pid.SetNow(pt_iter->GetNow(DATA), DATA);
     pt_pid.SetQueue(pt_iter->GetQueue(CODE), CODE);
     pt_pid.SetQueue(pt_iter->GetQueue(DATA), DATA);
+    pt_meta.insert(pid, pt_pid);
     return 0;
 }
 
