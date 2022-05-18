@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QVector>
 #include <QByteArray>
+#include <math.h>
 #include "include/Common/Common.h"
 namespace os {
     using page_t = int; // 虚拟页号
