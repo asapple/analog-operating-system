@@ -4,7 +4,7 @@
 #include <QStringList>
 using namespace os;
 
-Inode::Inode(int attribute, int size, int access_mode = 0x777, int n_links = 1)
+Inode::Inode(int attribute, int access_mode = 0x644, int size = 4096, int n_links = 1)
 {
     attribute_ = attribute;
     access_mode_ = access_mode;
@@ -12,10 +12,14 @@ Inode::Inode(int attribute, int size, int access_mode = 0x777, int n_links = 1)
     n_links_ = n_links;
 }
 
+Inode::~Inode() {}
+
 FCB::FCB(Inode fcb_inode, const QString fcb_name) : fcb_inode_(fcb_inode)
 {
     fcb_name_ = fcb_name;
 }
+
+FCB::~FCB() {}
 
 // MakeDiretory()
 // parameters: dir name
@@ -36,14 +40,27 @@ int FileManager::MakeDirectory(const QString &directory_name)
         qDebug() << "Illegal character '/' inside." << endl;
         return -1;
     }
+    QVector<DirectoryEntry> now_dir = cwd_.back().dir_;
+    for (DirectoryEntry dir_entry : now_dir)
+    {
+        if (dir_entry.name_ == directory_name) // confilct name
+        {
+            qDebug() << "directory name confilct!" << endl;
+            return -1;
+        }
+    }
 
-    Inode inode = Inode(0, 777, 0, 1); // TODO: dir size init val?
+    Inode inode = Inode(0, 0x755, 4096, 2); // dir size init val = 4096
     FCB fcb = FCB(inode, directory_name);
 
     // TODO: fail occasion
     fm_fcb_.push_back(fcb);
     inode2fcb_[inode] = fcb;
+<<<<<<< HEAD
+    return 0;
+=======
     return 1;
+>>>>>>> d95f463820242a612e676eba0b81a6e59f14793a
 }
 
 FileManager::FileManager()
@@ -62,8 +79,6 @@ FileManager::FileManager()
 
 FileManager::~FileManager()
 {
-    // TODO: inside elements to be free
-
     fm_fcb_.clear();
     cwd_.clear();
 }
@@ -87,11 +102,12 @@ QString FileManager::List()
 // ChangeDirectory()
 // parameter: change target
 // return: change success or not
+// PS: support absolute & relative directory path && Hierarchical directory
 int FileManager::ChangeDirectory(const QString &directory_name)
 {
     QVector copy_cwd(cwd_);
     QString inside_dir_name(directory_name);
-    if (inside_dir_name.indexOf("//") >= 0)
+    if (inside_dir_name.indexOf("//") >= 0) // example: '/first/second//next'
     {
         qDebug() << "Illegal input!" << endl;
         return -1;
@@ -131,7 +147,7 @@ int FileManager::ChangeDirectory(const QString &directory_name)
             }
             // matched
             cwd_.push_back(inode2fcb_[dir_entry.inode_]);
-            return 0;
+            continue;
         }
 
         // fail to match
@@ -139,4 +155,169 @@ int FileManager::ChangeDirectory(const QString &directory_name)
         qDebug() << "Illegal input directory!" << endl;
         return -1;
     }
+    return 0;
+}
+
+// MakeFile()
+// parameters: file name
+// return value: success or not
+// PS: only accept to create new file in current directory.
+int FileManager::MakeFile(const QString &file_name)
+{
+    if (file_name.length() == 0) // nothing input
+    {
+        qDebug() << "nothing input." << endl;
+        return -1;
+    }
+    if (file_name.indexOf("/")) // Illegal character '/'
+    {
+        qDebug() << "Illegal character '/' inside." << endl;
+        return -1;
+    }
+    QVector<DirectoryEntry> now_dir = cwd_.back().dir_;
+    for (DirectoryEntry dir_entry : now_dir)
+    {
+        if (dir_entry.name_ == file_name) // confilct name
+        {
+            qDebug() << "file name confilct!" << endl;
+            return -1;
+        }
+    }
+
+    // conrect input
+    Inode inode = Inode(0, 0x644, 0, 1); // file size init val = 0
+    FCB fcb = FCB(inode, file_name);
+
+    // TODO: fail occasion
+    fm_fcb_.push_back(fcb);
+    inode2fcb_[inode] = fcb;
+    return 0;
+}
+
+// RemoveFile()
+// parameters: file name
+// return value: success or not
+// PS: only accept to remove file in current directory.
+int FileManager::RemoveFile(const QString &file_name)
+{
+    if (file_name.length() == 0) // nothing input
+    {
+        qDebug() << "nothing input." << endl;
+        return -1;
+    }
+    if (file_name.indexOf("/")) // Illegal character '/'
+    {
+        qDebug() << "Illegal character '/' inside." << endl;
+        return -1;
+    }
+    QVector<DirectoryEntry> now_dir = cwd_.back().dir_;
+    for (DirectoryEntry dir_entry : now_dir)
+    {
+        if (dir_entry.name_ == file_name) // target matched
+        {
+            FCB target_file = inode2fcb_[dir_entry.inode_];
+            if (target_file.fcb_inode_.attribute_ == 1)
+            {
+                now_dir.removeOne(dir_entry);
+                return 0;
+            }
+            else // attempt to remove a direfctory of the same name
+            {
+                qDebug() << "target name is not a file!" << endl;
+                return -1;
+            }
+        }
+    }
+    // target not exist
+    qDebug() << "target file doesn\'t exist!" << endl;
+    return -1;
+}
+
+// RemoveDirectory()
+// parameters: dir name
+// return value: success or not
+// PS: only accept to remove directory in current directory.
+int FileManager::RemoveDirectory(const QString &directory_name)
+{
+    QString inside_dir_name(directory_name);
+    if (inside_dir_name.indexOf("//") >= 0) // example: 'first//'
+    {
+        qDebug() << "Illegal input!" << endl;
+        return -1;
+    }
+    if (inside_dir_name.length() == 0) // nothing input
+    {
+        qDebug() << "nothing input." << endl;
+        return -1;
+    }
+
+    if (inside_dir_name.at(inside_dir_name.size() - 1) == '/') // example: 'first/'
+    {
+        inside_dir_name.chop(1);
+    }
+    if (inside_dir_name.indexOf("/")) // Illegal character '/' inside
+    {
+        qDebug() << "Illegal character '/' inside." << endl;
+        return -1;
+    }
+    QVector<DirectoryEntry> now_dir = cwd_.back().dir_;
+    for (DirectoryEntry dir_entry : now_dir)
+    {
+        if (dir_entry.name_ == inside_dir_name) // target matched
+        {
+            FCB target_file = inode2fcb_[dir_entry.inode_];
+            if (target_file.fcb_inode_.attribute_ == 0)
+            {
+                now_dir.removeOne(dir_entry);
+                return 0;
+            }
+            else // attempt to remove a file of the same name
+            {
+                qDebug() << "target name is not a directory!" << endl;
+                return -1;
+            }
+        }
+    }
+    // target not exist
+    qDebug() << "target file doesn\'t exist!" << endl;
+    return -1;
+}
+
+// ReadFile()
+// parameters: file name,
+// return value: success or not
+// PS: only accept to remove directory in current directory.
+int FileManager::ReadFile(const QString &file_name, QByteArray &content)
+{
+    if (file_name.length() == 0) // nothing input
+    {
+        qDebug() << "nothing input." << endl;
+        return -1;
+    }
+    if (file_name.indexOf("/")) // Illegal character '/'
+    {
+        qDebug() << "Illegal character '/' inside." << endl;
+        return -1;
+    }
+    QVector<DirectoryEntry> now_dir = cwd_.back().dir_;
+    for (DirectoryEntry dir_entry : now_dir)
+    {
+        if (dir_entry.name_ == file_name) // target matched
+        {
+            FCB target_file = inode2fcb_[dir_entry.inode_];
+            if (target_file.fcb_inode_.attribute_ == 1)
+            {
+                content = target_file.data_;
+                return 0;
+            }
+            else // attempt to read a direfctory of the same name
+            {
+                qDebug() << "target name is not a directory!" << endl;
+                return -1;
+            }
+        }
+    }
+    // target not exist
+    qDebug() << "target file doesn\'t exist!" << endl;
+    return -1;
 }

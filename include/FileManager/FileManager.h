@@ -7,8 +7,8 @@
 #include <QMap>
 
 #include "include/Common/Common.h"
-// TODO: 从现实中的某个文件系统根目录读取目录树，并拷贝到模拟操作系统的文件系统中
-// TODO: 读取现实操作系统中的文件的时候，逐行读取，转化为一个指令
+// 从现实中的某个文件系统根目录读取目录树，并拷贝到模拟操作系统的文件系统中
+// 读取现实操作系统中的文件的时候，逐行读取，转化为一个指令
 /*
  类似于这样：
     QFile file("file_name.txt"); //对应真实操作系统中的文件
@@ -30,14 +30,16 @@ namespace os
     class Inode
     {
     private:
-        int attribute_;   // 0 : dir, 1 : file
         int access_mode_; // 0x777, 0x003, 0x000 ...
         int size_;
         int n_links_;
         //        QByteArray data_;    // 暂不绑定指针, 直接返回整个inode绑定的文件内容
 
     public:
-        Inode(int attribute, int access_mode, int size, int n_links);
+        int attribute_; // 0 : dir, 1 : file
+
+        Inode(int attribute, int size, int access_mode, int n_links);
+        ~Inode();
     };
 
     class File
@@ -70,8 +72,10 @@ namespace os
 
     public:
         FCB(Inode fcb_inode, const QString fcb_name);
+        ~FCB();
     };
 
+    // FileManager method return value: 0: success / -1: fail
     class FileManager
     {
     private:
@@ -85,13 +89,13 @@ namespace os
         FileManager();  // ok
         ~FileManager(); // ok
 
-        QString List();                                             // ok
-        int ChangeDirectory(const QString &directory_name);         // ok
-        int MakeFile(const QString &file_name);
-        int MakeDirectory(const QString &directory_name);           // ok
-        int RemoveFile(const QString &file_name);
-        int RemoveDirectory(const QString &directory_name);
-        int ReadFile(const QString &file_name, QByteArray &content);
+        QString List();                                              // ok
+        int ChangeDirectory(const QString &directory_name);          // ok
+        int MakeFile(const QString &file_name);                      // ok
+        int MakeDirectory(const QString &directory_name);            // ok
+        int RemoveFile(const QString &file_name);                    // ok
+        int RemoveDirectory(const QString &directory_name);          // ok
+        int ReadFile(const QString &file_name, QByteArray &content); // ok
     };
 }
 
