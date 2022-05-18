@@ -10,18 +10,17 @@ CONFIG += c++17
 
 SOURCES += \
     src/DeviceManager/DiskManager.cpp \
+    src/DeviceManager/DeviceManager.cpp \
     src/ProcessManager/CPU.cpp \
     src/ProcessManager/Interupt.cpp \
-    src/UI/mainwindow.cpp \
-#    src/FileManager/FileManager.cpp \
+    src/ProcessManager/ProcessManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
+    #src/FileManager/FileManager.cpp \
     #src/Test/MemoryTest.cpp \
     #src/Test/MemoryTest.cpp \
     #src/Test/ProcessTest.cpp \
-    src/Test/ProcessMemoryTest.cpp \
-    src/ProcessManager/ProcessManager.cpp \
-    src/DeviceManager/DeviceManager.cpp \
-#    src/main.cpp
+    #src/Test/ProcessMemoryTest.cpp \
+    src/main.cpp
 
 HEADERS += \
     include/Common/Common.h \
@@ -36,8 +35,11 @@ HEADERS += \
     include/ProcessManager/ProcessManager.h \
     include/UI/mainwindow.h \
 
-FORMS += \
-    mainwindow.ui
+# UI模块引入
+SOURCES += $$files(UI/*.cpp, true)
+HEADERS += $$files(UI/*.h, true)
+RESOURCES += $$files(UI/*.qrc, true)
+FORMS += UI/form/frmmain.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
