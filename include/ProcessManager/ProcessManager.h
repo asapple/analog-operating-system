@@ -48,6 +48,8 @@ private:
     pid_t run_process_;
     // 当前时间
     tick_t cur_time_;
+    // 上次调度的索引
+    int last_index_;
 
     ProcessManager(int kMaxProcessNum, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
 public:

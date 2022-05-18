@@ -56,11 +56,7 @@ int FileManager::MakeDirectory(const QString &directory_name)
     // TODO: fail occasion
     fm_fcb_.push_back(fcb);
     inode2fcb_[inode] = fcb;
-<<<<<<< HEAD
     return 0;
-=======
-    return 1;
->>>>>>> d95f463820242a612e676eba0b81a6e59f14793a
 }
 
 FileManager::FileManager()

@@ -12,13 +12,7 @@ SOURCES += \
     src/DeviceManager/DiskManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
     src/ProcessManager/CPU.cpp \
-    src/ProcessTest.cpp \
     src/ProcessManager/Interupt.cpp \
-    src/Test/ProcessMemoryTest.cpp \
-    src/UI/mainwindow.cpp \
-    src/FileManager/FileManager.cpp \
-    src/MemoryManager/MemoryManager.cpp \
-    #src/MemoryTest.cpp \
     src/ProcessManager/ProcessManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
     #src/FileManager/FileManager.cpp \
@@ -40,7 +34,6 @@ HEADERS += \
     include/ProcessManager/Interupt.h \
     include/ProcessManager/Process.h \
     include/ProcessManager/ProcessManager.h \
-    include/UI/mainwindow.h \
 
 # UI模块引入
 SOURCES += $$files(UI/*.cpp, true)
