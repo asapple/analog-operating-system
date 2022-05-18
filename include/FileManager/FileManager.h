@@ -4,98 +4,86 @@
 #include <QString>
 #include <QVector>
 #include <QByteArray>
-#include <QMap>
+#include <QHash>
 
 #include "include/Common/Common.h"
-// 从现实中的某个文件系统根目录读取目录树，并拷贝到模拟操作系统的文件系统中
-// 读取现实操作系统中的文件的时候，逐行读取，转化为一个指令
-/*
- 类似于这样：
-    QFile file("file_name.txt"); //对应真实操作系统中的文件
-    QByteArray data_; //文件数据
-    if (file.open(QFile::ReadOnly | QIODevice::Text)) {
-        while (!file.atEnd()) {
-            QByteArray str = file.readLine();
-            os::Instruction ins(str); // 从字符数组或字符串中获取指令
-            data_.append(static_cast<QByteArray>(ins)); //将指令保存到数组里
-        }
-        file.close();
-    } else {
-       // 错误
-    }
- */
 
 namespace os
 {
-    class Inode
+    struct Inode
     {
-    private:
         int access_mode_; // 0x777, 0x003, 0x000 ...
+        int fcb_;
         int size_;
         int n_links_;
-        //        QByteArray data_;    // 暂不绑定指针, 直接返回整个inode绑定的文件内容
-
-    public:
         int attribute_; // 0 : dir, 1 : file
+        QString fcb_name_;
 
-        Inode(int attribute, int size, int access_mode, int n_links);
-        ~Inode();
+        Inode(int attribute, QString fcb_name, int fcb, int size, int access_mode, int n_links);
     };
 
     class File
     {
     public:
-        bool file_mode_;
-        bool file_flags_;
-        bool file_count_;
         QByteArray data_; // 暂不绑定指针, 直接返回整个inode绑定的文件内容
     };
 
-    class DirectoryEntry
+    struct DirectoryEntry
     {
-    public:
-        Inode inode_;
+        inode_t inode_;
         QString name_;
+        DirectoryEntry(inode_t inode = -1, QString name = ""):
+            inode_(inode),
+            name_(name)
+        {}
     };
 
     class Directory
     {
     public:
-        QVector<DirectoryEntry> dir_;
+        QVector<DirectoryEntry> files_;
+        QVector<DirectoryEntry> subdirs_;
+        DirectoryEntry pre;
     };
 
     class FCB : public File, public Directory
     {
     public:
-        class Inode fcb_inode_;
-        QString fcb_name_;
-
-    public:
-        FCB(Inode fcb_inode, const QString fcb_name);
-        ~FCB();
+        FCB() = default;
     };
 
     // FileManager method return value: 0: success / -1: fail
     class FileManager
     {
     private:
+        QVector<Inode> fm_inodes_;
         QVector<FCB> fm_fcb_;
-        QVector<FCB> cwd_;
-        // Directory now_dir_;
-        bool init_flag_ = true;
-        QMap<Inode, FCB> inode2fcb_;
+        // 根目录
+        inode_t root_;
+        // 当前目录
+        inode_t cwd_;
+        // umask
+        int umask_;
+        // 根目录映射到现实操作系统的路径
+        QString root_path_;
 
+        inode_t InsertFCB(int attribute, QString fcb_name, const FCB& fcb = FCB());
+        int ForkCreate(const QString& real_path, inode_t pre = -1);
+        int ForkSave(const QString& real_path, inode_t cur);
+        inode_t Str2Path(const QString& path);
+        FileManager(const QString& path, int umask = 0x644);  // ok
+        ~FileManager();
     public:
-        FileManager();  // ok
-        ~FileManager(); // ok
+        FileManager& Instance(const QString& forkroot = "./files");
+        QString GetCWD();
 
-        QString List();                                              // ok
-        int ChangeDirectory(const QString &directory_name);          // ok
-        int MakeFile(const QString &file_name);                      // ok
-        int MakeDirectory(const QString &directory_name);            // ok
-        int RemoveFile(const QString &file_name);                    // ok
-        int RemoveDirectory(const QString &directory_name);          // ok
-        int ReadFile(const QString &file_name, QByteArray &content); // ok
+        int List(QVector<QString>& files, QVector<QString>& dirs );                                              // ok
+        int ChangeDirectory(QString path);          // ok
+        int MakeFile(QString file_name);                      // ok
+        int MakeDirectory(QString directory_name);            // ok
+        int RemoveFile(QString file_name);                    // ok
+        int RemoveDirectory(QString directory_name);          // ok
+        int ReadFile(QString file_name, QByteArray &content); // ok
     };
 }
 

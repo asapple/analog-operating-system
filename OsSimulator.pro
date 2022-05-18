@@ -15,7 +15,7 @@ SOURCES += \
     src/ProcessManager/Interupt.cpp \
     src/ProcessManager/ProcessManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
-    #src/FileManager/FileManager.cpp \
+    src/FileManager/FileManager.cpp \
     #src/Test/MemoryTest.cpp \
     #src/Test/MemoryTest.cpp \
     #src/Test/ProcessTest.cpp \
@@ -27,7 +27,7 @@ HEADERS += \
     include/Common/Common.h \
     include/DeviceManager/DeviceManager.h \
     include/DeviceManager/DiskManager.h \
-#    include/FileManager/FileManager.h \
+    include/FileManager/FileManager.h \
     include/MemoryManager/MemoryManager.h \
     include/ProcessManager/CPU.h \
     include/ProcessManager/Instruction.h \
