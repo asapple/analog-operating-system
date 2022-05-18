@@ -1,13 +1,14 @@
 #include "include/DeviceManager/DeviceManager.h"
-
+#include "include/ProcessManager/Interupt.h"
 namespace os
 {
 
-    Device::Device()
+    Device::Device(dev_t dev_num)
     {
         isInterupt_ = 0; //未发生中断
-        prioruty_ = 1;   //默认优先级为1
+        priority_ = 1;   //默认优先级为1
         state_ = IDLE;   //默认空闲状态
+        dev_num_ = dev_num; // 设备号
     }
 
     void Device::SetIsInterupt(int newIsInterupt)
@@ -50,6 +51,8 @@ namespace os
                 /*
                  * 上报CPU处理,不会写了
                  */
+                InteruptManager::Instance().InteruptRequest(Interupt(dev_num_, now_queue_.begin()->pid_, priority_));
+
                 now_queue_.pop_front(); //删除队首任务;
                 if (now_queue_.empty())
                     state_ = IDLE; //若执行完成后队列为空 改变设备状态；
@@ -62,7 +65,7 @@ namespace os
     {
         for (int i = 0; i < DEVICE_SIZE; i++)
         { //创建系统中设备
-            Device temp_device_;
+            Device temp_device_(i);
             device_.insert(i, temp_device_);
         }
     }

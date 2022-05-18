@@ -16,15 +16,15 @@ namespace os
         /* 是否增加创建新device功能？ */
         QVector<PidTime> now_queue_; //存储该设备当前队列
         int isInterupt_;             //该设备中断信号位  1表示当前进程完成发生中断
-        int prioruty_;               //设备优先级
+        int priority_;               //设备优先级
+        int dev_num_;             // 设备号
         enum
         {
             BUSY,
             IDLE
         } state_; //该设备当前状态
     public:
-        Device();
-        ~Device(){};
+        Device(dev_t dev_num = 0);
 
         int GetIsInterupt() { return isInterupt_; }; //获取该设备中断信号位
         int GetState() { return state_; };     //获取该设备当前状态

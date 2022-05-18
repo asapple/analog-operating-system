@@ -17,7 +17,8 @@ namespace os {
 ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, SchedulerType type):
     kMaxProcessNum_(kMaxProcessNum),
     is_preemptive_(is_preemptive),
-    process_list_(kMaxProcessNum+1)
+    process_list_(kMaxProcessNum+1),
+    last_index_(0)
 {
     if (type == SchedulerType::FCFS) {
         scheduler_.reset(static_cast<Scheduler*>(new FCFSScheduler));
@@ -56,16 +57,20 @@ void ProcessManager::UpdateTime() {
  */
 int ProcessManager::Execute(QString file_name) {
     pid_t pid;
-    for (pid = 1; pid <= kMaxProcessNum_; pid++) {
+    bool flag = false;
+    for (int cnt = 0; cnt < kMaxProcessNum_; cnt++) {
+        pid = (last_index_ + cnt) % kMaxProcessNum_ + 1;
         if (process_list_[pid].state_ == ProcessState::UNUSED) {
+            last_index_ = pid;
             process_list_[pid].state_ = ProcessState::READY;
+            flag = true;
             break;
         }
     }
-    qDebug() << "[" << pid << "]: Initializing execute " << file_name << "......";
-    if (pid == kMaxProcessNum_) {
+    if (!flag) {
         return -1;
     }
+    qDebug() << "[" << pid << "]: Initializing execute " << file_name << "......";
     int size = MemoryManager::Instance().InitMemory(pid, file_name);
 
     if (size <= 0) {
@@ -78,7 +83,7 @@ int ProcessManager::Execute(QString file_name) {
     process_list_[pid].start_time_ = cur_time_;
     process_list_[pid].file_name_ = file_name;
     scheduler_->PushProcess(pid);
-    qDebug() << "[ " << pid << " ]: Sucecessfully initialize " << file_name << ".";
+    qDebug() << "[" << pid << "]: Sucecessfully initialize " << file_name << ".";
     return 0;
 }
 /**
@@ -88,12 +93,17 @@ int ProcessManager::Execute(QString file_name) {
  */
 int ProcessManager::Fork(pid_t ppid) {
     pid_t pid;
-    for (pid = 1; pid <= kMaxProcessNum_; pid++) {
+    bool flag = false;
+    for (int cnt = 0; cnt < kMaxProcessNum_; cnt++) {
+        pid = (last_index_ + cnt) % kMaxProcessNum_ + 1;
         if (process_list_[pid].state_ == ProcessState::UNUSED) {
+            last_index_ = pid;
+            process_list_[pid].state_ = ProcessState::READY;
+            flag = true;
             break;
         }
     }
-    if (pid == kMaxProcessNum_) {
+    if (!flag) {
         return -1;
     }
     int size = MemoryManager::Instance().ForkMemory(pid, ppid);
@@ -122,7 +132,7 @@ int ProcessManager::CheckKilled()
     // 检查当前正在执行的进程
     if (process_list_[run_process_].state_ == ProcessState::KILLED) {
         MemoryManager::Instance().ReleaseMemory(run_process_);
-        qDebug() << "[" << run_process_ << "]("<< process_list_[run_process_] .file_name_ << "): has already been killed.";
+        qDebug() << "[" << run_process_ << "]("<<"FileName:" <<process_list_[run_process_] .file_name_ << ","<< "Parent:" << process_list_[run_process_].ppid_ << "): has already been killed.";
         process_list_[run_process_] = PCB();
         process_list_[run_process_].pid_ = run_process_;
     }
@@ -130,7 +140,7 @@ int ProcessManager::CheckKilled()
     for (auto pid:GetReadyQueue()) {
         if (process_list_[pid].state_ == ProcessState::KILLED) {
             MemoryManager::Instance().ReleaseMemory(pid);
-            qDebug() << "[" << pid << "]("<< process_list_[pid] .file_name_ << "): has already been killed.";
+            qDebug() << "[" << pid << "]("<<"FileName:" <<process_list_[pid] .file_name_ << ","<< "Parent:" << process_list_[pid].ppid_ << "): has already been killed.";
             process_list_[pid] = PCB();
             process_list_[pid].pid_ = pid;
             scheduler_->RemoveProcess(pid);
@@ -140,7 +150,7 @@ int ProcessManager::CheckKilled()
     for (auto it = wait_queue_.begin(); it != wait_queue_.end(); it++) {
         if (process_list_[*it].state_ == ProcessState::KILLED) {
             MemoryManager::Instance().ReleaseMemory(*it);
-            qDebug() << "[ " << *it << " ]("<< process_list_[*it] .file_name_ << "): has already been killed.";
+            qDebug() << "[" << *it << "]("<<"FileName:" <<process_list_[*it] .file_name_ << ","<< "Parent:" << process_list_[*it].ppid_ << "): has already been killed.";
             process_list_[*it] = PCB();
             process_list_[*it].pid_ = *it;
             // TODO 对应设备删除队列
@@ -153,11 +163,17 @@ int ProcessManager::CheckKilled()
  * @brief ProcessManager::Kill
  * 终止进程
  * @param pid 进程号
- * @return 返回码，成功返回0，若进程已经被终止则失败返回-1
+ * @return 返回码
+ * @return 成功返回0
+ * @return 若进程号不合法为-1
+ * @return 若进程已经被终止则失败返回-2
  */
 int ProcessManager::Kill(pid_t pid) {
-    if (process_list_[pid].state_ == ProcessState::UNUSED || process_list_[pid].state_ == ProcessState::KILLED) {
+    if (pid<0 || pid > kMaxProcessNum_) {
         return -1;
+    }
+    if (process_list_[pid].state_ == ProcessState::UNUSED || process_list_[pid].state_ == ProcessState::KILLED) {
+        return -2;
     }
     process_list_[pid].state_ = ProcessState::KILLED;
     return 0;

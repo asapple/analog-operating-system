@@ -1,4 +1,4 @@
-#include "include/UI/mainwindow.h"
+#include "UI/Form/frmmain.h"
 #include "include/Common/Common.h"
 #include "include/MemoryManager/MemoryManager.h"
 #include <QApplication>
@@ -9,7 +9,7 @@ void TestMemory();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    frmMain w;
     w.show();
     TestMemory();
     return a.exec();
