@@ -2,8 +2,15 @@
 #include "include/Common/Common.h"
 #include "include/ProcessManager/CPU.h"
 #include "include/ProcessManager/ProcessManager.h"
+#include "include/ProcessManager/Interupt.h"
 #include <QApplication>
 #include <QDebug>
+
+void Init()
+{
+    os::ProcessManager::Instance(100,true);
+    os::InteruptManager::Instance().SetInterupt(true);
+}
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +22,9 @@ int main(int argc, char *argv[])
 #if (QT_VERSION >= QT_VERSION_CHECK(5,14,0))
     QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
 #endif
-
+    Init();
+    os::CPU cpu(500);
+    cpu.start();
     QApplication a(argc, argv);
     frmMain w;
     w.show();

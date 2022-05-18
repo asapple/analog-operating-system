@@ -1,4 +1,5 @@
 #include "include/MemoryManager/MemoryManager.h"
+#include "include/ProcessManager/Instruction.h"
 #include <QDebug>
 using namespace os;
 
@@ -135,17 +136,25 @@ QVector<frame_t> PageTable::PrintOccupying()
     }
     return result;
 }
-
-//int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
-//{
-//    content.append(Instruction());
-//    return 0;
-//}
+// TODO 文件系统完成后删除
+int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
+{
+    content.append(Instruction(InsType::COMPUTE, 2));
+    content.append(Instruction(InsType::FORK, 2));
+    content.append(Instruction(InsType::COMPUTE, 3));
+    content.append(Instruction(InsType::DEVICE, 3, 0));
+    content.append(Instruction(InsType::PRIORITY, 2));
+    content.append(Instruction(InsType::ACCESS, 33));
+    content.append(Instruction(InsType::FORK, 2));
+    content.append(Instruction(InsType::QUIT));
+    return 0;
+}
 
 MemoryManager::MemoryManager() :
+    CODE(true), DATA(false),
     memory(MEMORY_TOTAL_SIZE, '0'),
-    bitmap(MEMORY_TOTAL_SIZE/MEMORY_PAGE_SIZE,-1),
-    CODE(true), DATA(false) {}
+    bitmap(MEMORY_TOTAL_SIZE/MEMORY_PAGE_SIZE,-1)
+     {}
 
 MemoryManager& MemoryManager::Instance()
 {
@@ -193,6 +202,8 @@ void MemoryManager::CopyBytes(QByteArray& dest, int dstart, QByteArray& sour, in
 int MemoryManager::ReadBytes(QString file_name, page_t page, offset_t offset, size_t size, QByteArray& content)
 {
     QByteArray source;
+    //TODO 文件系统完善后改为
+//    int error = FileManager::Instance().ReadFile(file_name, source);
     int error = ReadFile(file_name, source); // 读取文件
     if (error) return error; // 错误码不为0，上报错误
     int start = page * 8 + offset; // 计算相对与文件头的偏移量
@@ -318,7 +329,7 @@ int MemoryManager::AccessMemory(pid_t pid, size_t virt_addr)
     if (visit_error == 2){ // 数据不在内存中，且需要分配一个新的物理帧
         QVector<frame_t> new_frame;
         if (GetFrame(1, new_frame)) { // GetFrame返回1，说明内存不足
-            int data_now = pt_iter->GetNow(DATA);
+            size_t data_now = pt_iter->GetNow(DATA);
             if (data_now > 0) { // 当前数据页不为0
                 pt_iter->SetMax(data_now, DATA); // 将数据页上限设置为当前有效页数
                 AccessMemory(pid, virt_addr); // 重新执行本函数
@@ -366,8 +377,8 @@ int MemoryManager::MoreMemory(pid_t pid, size_t size)
     int num = ceil(size/double(MEMORY_PAGE_SIZE)); // 计算所需内存页
     pt_iter->SetMax(pt_iter->GetNow(DATA)+num, DATA); // 提高数据段页数量上限
 
-    int code_now = pt_iter->GetNow(CODE), data_now = pt_iter->GetNow(DATA);
-    int code_max = pt_iter->GetMax(CODE), data_max = pt_iter->GetMax(DATA);
+    size_t code_now = pt_iter->GetNow(CODE), data_now = pt_iter->GetNow(DATA);
+    size_t code_max = pt_iter->GetMax(CODE), data_max = pt_iter->GetMax(DATA);
     QString str = QString("[MoreMem]  pid:%1  code now:%2  code max:%3  data now:%4  data max:%5").arg(QString::number(pid), QString::number(code_now), QString::number(code_max), QString::number(data_now), QString::number(data_max));
     PrintInfo(str);
 
@@ -383,7 +394,7 @@ int MemoryManager::ReleaseMemory(pid_t pid)
         if (i->GetVi()) // 解除对有效页的占用
             bitmap[i->GetFrame()] = -1;
     }
-    pt_iter->~PageTable(); // 析构页表
+//    pt_iter->~PageTable(); // 析构页表
     pt_meta.erase(pt_iter); // 删除映射
     return 0;
 }

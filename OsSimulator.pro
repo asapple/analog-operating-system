@@ -20,7 +20,8 @@ SOURCES += \
     #src/Test/MemoryTest.cpp \
     #src/Test/ProcessTest.cpp \
     #src/Test/ProcessMemoryTest.cpp \
-    src/main.cpp
+    src/Test/IntegretedTest.cpp \
+#    src/main.cpp
 
 HEADERS += \
     include/Common/Common.h \

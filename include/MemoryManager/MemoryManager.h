@@ -44,9 +44,9 @@ namespace os {
         ~PageTable() {}
         pid_t GetPid() { return pid; } // 获取页表所属进程
         const QHash<page_t, PtItem> GetTable() { return table; } // 返回只读的页表
-        int GetOccupy() { return occupy; } // 获取页表中已缓存页的数量
-        int GetNow(bool typ) { if (typ == CODE) return code_now; else return data_now; } // 获取代码段或数据段的有效页数
-        int GetMax(bool typ) { if (typ == CODE) return code_max; else return data_max; } // 获取代码段或数据段的页数上限
+        size_t GetOccupy() { return occupy; } // 获取页表中已缓存页的数量
+        size_t GetNow(bool typ) { if (typ == CODE) return code_now; else return data_now; } // 获取代码段或数据段的有效页数
+        size_t GetMax(bool typ) { if (typ == CODE) return code_max; else return data_max; } // 获取代码段或数据段的页数上限
         QVector<page_t> GetQueue(bool typ) { if (typ == CODE) return code_queue; else return data_queue; } // 获取代码段或数据段的牺牲队列
         inline void SetOccupy(size_t size) { occupy = size; } // 修改页表中已缓存页的数量
         inline void SetMax(size_t size, bool typ) { if (typ == CODE) code_max = size; else data_max = size; } // 修改代码段或数据段的内存页上限

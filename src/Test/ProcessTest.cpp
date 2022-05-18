@@ -1,4 +1,4 @@
-#include "include/UI/mainwindow.h"
+#include "UI/Form/frmmain.h"
 #include "include/Common/Common.h"
 #include "include/ProcessManager/CPU.h"
 #include "include/ProcessManager/ProcessManager.h"
@@ -10,7 +10,7 @@ void TestPriorityScheduler();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    frmMain w;
     w.show();
     TesFIFOScheduler();
     TestPriorityScheduler();

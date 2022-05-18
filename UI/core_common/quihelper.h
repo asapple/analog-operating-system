@@ -1,7 +1,7 @@
 ﻿#ifndef QUIHELPER2_H
 #define QUIHELPER2_H
 
-#include "head.h"
+#include "UI/head.h"
 
 class QUIHelper
 {

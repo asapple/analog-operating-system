@@ -3,6 +3,8 @@
 #include "UI/core_common/iconhelper.h"
 #include "UI/core_common/quihelper.h"
 
+#include "include/ProcessManager/ProcessManager.h"
+
 frmMain::frmMain(QWidget *parent) : QDialog(parent), ui(new Ui::frmMain)
 {
     ui->setupUi(this);
@@ -139,8 +141,10 @@ void frmMain::on_btnMenu_Close_clicked()
 
 void frmMain::on_exec_pushButton_clicked()
 {
+    QString cmds = ui->cmd_lineEdit->text();
     ui->cmd_lineEdit->clear();// 清空命令行
-    QStringList cmd = ui->cmd_lineEdit->text().split(" ");
+    ui->echo_textBrowser->append("$ "+cmds);
+    QStringList cmd = cmds.split(" ");
     if(cmd.empty())
         return;
     else if (cmd[0]=="ls") {
@@ -173,8 +177,9 @@ void frmMain::on_exec_pushButton_clicked()
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="exec") {
         // 调用文件系统的FileManager::Execute()方法
-        QString str="";
-        ui->echo_textBrowser->append(str);
+//        QString str="";
+        os::ProcessManager::Instance().Execute(cmd[1]);
+//        ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="kill") {
         // 调用文件系统的FileManager::Kill()方法
         QString str="";
@@ -184,7 +189,7 @@ void frmMain::on_exec_pushButton_clicked()
         QString str="";
         ui->echo_textBrowser->append(str);
     }else{
-        ui->echo_textBrowser->append(QString("==>command not definded;"));
+        ui->echo_textBrowser->append(QString("command not definded;"));
     }
     return;
 }

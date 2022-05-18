@@ -9,7 +9,7 @@
 
 namespace os {
 CPU::CPU(int time_slot)
-    : time_slot_(time_slot), current_run_(0), cur_tick_(0)
+    : time_slot_(time_slot), cur_tick_(0), current_run_(0)
 {}
 /**
  * @brief CPU::run
@@ -103,6 +103,7 @@ int CPU::ExecuteInstruction(PCB& pcb)
         }
         pcb.state_ = ProcessState::WAIT;
         ProcessManager::Instance().wait_queue_.push_back(pcb.pid_);
+        qDebug() <<"[" <<  pcb.pid_ << "]: wait for device" << pcb.ir_.op2 << "access" << pcb.ir_.op1 << "cycles";
         break;
          // fork指令
     case InsType::FORK:

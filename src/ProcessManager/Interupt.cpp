@@ -1,6 +1,7 @@
 #include "include/ProcessManager/Interupt.h"
 #include "include/ProcessManager/ProcessManager.h"
 
+#include <QDebug>
 
 namespace os
 {
@@ -31,14 +32,20 @@ int InteruptManager::InteruptDetect() {
     if (is_enable_) {
         ProcessManager& pm = ProcessManager::Instance();
         // 将中断的进程恢复就绪状态
-        for (auto listit = interupt_queue_.begin(); listit != interupt_queue_.end(); listit++) {
-            for (auto it = listit->begin(); it != listit->end(); it++) {
+        for (int i = 0; i < interupt_queue_.size(); i++) {
+            auto listit = interupt_queue_[i];
+            if (!listit.empty()) {
+                qDebug() << "[Interupt] handling interupt for priority"<< i << "...";
+            }
+            for (auto it = listit.begin(); it != listit.end(); it++) {
                 PCB& pcb = pm.GetPCB(it->pid_);
                 if (pcb.state_ == ProcessState::WAIT) {
+                    qDebug() << "[" << it->pid_ <<"] "<< "wake up from wait device" << it->dev_num_;
                     pcb.state_ = ProcessState::READY;
                     pm.pushProcess(pcb.pid_);
                 }
             }
+            interupt_queue_[i].clear();
         }
     }
     return 0;

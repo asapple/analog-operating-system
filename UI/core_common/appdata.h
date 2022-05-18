@@ -1,7 +1,7 @@
 ﻿#ifndef APPDATA_H
 #define APPDATA_H
 
-#include "head.h"
+#include "UI/head.h"
 
 class AppData
 {

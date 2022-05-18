@@ -1,4 +1,4 @@
-#include "include/UI/mainwindow.h"
+#include "UI/Form/frmmain.h"
 #include "include/Common/Common.h"
 #include "include/ProcessManager/ProcessManager.h"
 #include "include/MemoryManager/MemoryManager.h"
@@ -25,7 +25,7 @@ int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    frmMain w;
     w.show();
 //    TestExec();
 //    TestRRExec();

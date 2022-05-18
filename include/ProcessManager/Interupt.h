@@ -18,6 +18,11 @@ struct Interupt {
     pid_t pid_;
     // 中断请求优先级
     priority_t priority_;
+    Interupt(dev_t dev_num, pid_t pid, priority_t priority = 0)
+        : dev_num_(dev_num),
+          pid_(pid),
+          priority_(priority)
+    {};
 };
 /**
  * @brief 中断管理系统
