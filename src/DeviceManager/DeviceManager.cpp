@@ -42,16 +42,18 @@ namespace os
 
     int Device::UpdateTimeDevice()
     {
-        now_queue_.begin()->time_--;
-        if (now_queue_.begin()->time_ == 0)
-        {                    //当前任务执行完成
-            isInterupt_ = 1; //中断标志位置1
-            /*
-             * 上报CPU处理,不会写了
-             */
-            now_queue_.remove(0); //删除队首任务;
-            if (now_queue_.empty())
-                state_ = IDLE; //若执行完成后队列为空 改变设备状态；
+        if (!now_queue_.isEmpty()) {
+            now_queue_.begin()->time_--;
+            if (now_queue_.begin()->time_ == 0)
+            {                    //当前任务执行完成
+                isInterupt_ = 1; //中断标志位置1
+                /*
+                 * 上报CPU处理,不会写了
+                 */
+                now_queue_.pop_front(); //删除队首任务;
+                if (now_queue_.empty())
+                    state_ = IDLE; //若执行完成后队列为空 改变设备状态；
+            }
         }
         return 0;
     }

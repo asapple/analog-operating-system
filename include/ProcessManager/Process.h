@@ -46,7 +46,17 @@ namespace os {
         // 本条指令已经执行的时间
         tick_t ins_time_;
         PCB()
-            :state_(ProcessState::UNUSED)
+            :state_(ProcessState::UNUSED),
+              pid_(0),
+              ppid_(0),
+              file_name_(""),
+              size_(0),
+              priority_(0),
+              pc_(0),
+              ir_(),
+              start_time_(0),
+              run_time_(0),
+              ins_time_(0)
         {}
     };
 }

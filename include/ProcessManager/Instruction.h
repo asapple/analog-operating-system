@@ -30,6 +30,12 @@ struct Instruction {
     Instruction()
         :type(InsType::QUIT), op(0)
     {}
+    Instruction(InsType type, int op = 0)
+        :type(type), op(op)
+    {}
+    Instruction(InsType type, short op1, short op2)
+        :type(type), op1(op1), op2(op2)
+    {}
     Instruction(QString line) {
         type = static_cast<InsType>(line.at(0).toLatin1());
         if (type != InsType::DEVICE) {

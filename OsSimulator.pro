@@ -9,16 +9,26 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/DeviceManager/DiskManager.cpp \
     src/ProcessManager/CPU.cpp \
+<<<<<<< HEAD
     src/ProcessTest.cpp \
+=======
+    #src/Test/ProcessTest.cpp \
+>>>>>>> eddf2a3387a352a23610587030b9ef471bbb29bf
     src/ProcessManager/Interupt.cpp \
+    src/Test/ProcessMemoryTest.cpp \
     src/UI/mainwindow.cpp \
     src/FileManager/FileManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
+<<<<<<< HEAD
     #src/MemoryTest.cpp \
+=======
+#    src/Test/MemoryTest.cpp \
+>>>>>>> eddf2a3387a352a23610587030b9ef471bbb29bf
     src/ProcessManager/ProcessManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
-    src/main.cpp
+#    src/main.cpp
 
 HEADERS += \
     include/Common/Common.h \

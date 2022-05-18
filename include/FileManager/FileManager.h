@@ -3,6 +3,10 @@
 
 #include <QString>
 #include <QVector>
+#include <QByteArray>
+#include <QMap>
+
+#include "include/Common/Common.h"
 // TODO: 从现实中的某个文件系统根目录读取目录树，并拷贝到模拟操作系统的文件系统中
 // TODO: 读取现实操作系统中的文件的时候，逐行读取，转化为一个指令
 /*
@@ -30,7 +34,7 @@ namespace os
         int access_mode_; // 0x777, 0x003, 0x000 ...
         int size_;
         int n_links_;
-        //        QVector<char> data_;    // 暂不绑定指针, 直接返回整个inode绑定的文件内容
+        //        QByteArray data_;    // 暂不绑定指针, 直接返回整个inode绑定的文件内容
 
     public:
         Inode(int attribute, int access_mode, int size, int n_links);
@@ -38,29 +42,29 @@ namespace os
 
     class File
     {
-    private:
+    public:
         bool file_mode_;
         bool file_flags_;
         bool file_count_;
-        QVector<char> data_; // 暂不绑定指针, 直接返回整个inode绑定的文件内容
+        QByteArray data_; // 暂不绑定指针, 直接返回整个inode绑定的文件内容
     };
 
-    class DirectorEntry
+    class DirectoryEntry
     {
-    private:
-        int inode_;
+    public:
+        Inode inode_;
         QString name_;
     };
 
-    class Director
+    class Directory
     {
-    private:
-        QVector<DirectorEntry> dir_;
+    public:
+        QVector<DirectoryEntry> dir_;
     };
 
-    class FCB : public File, public Director
+    class FCB : public File, public Directory
     {
-    private:
+    public:
         class Inode fcb_inode_;
         QString fcb_name_;
 
@@ -72,15 +76,19 @@ namespace os
     {
     private:
         QVector<FCB> fm_fcb_;
-        QVector<QString> cwd_;
+        QVector<FCB> cwd_;
+        // Directory now_dir_;
+        bool init_flag_ = true;
+        QMap<Inode, FCB> inode2fcb_;
 
     public:
-        FileManager();
+        FileManager();  // ok
+        ~FileManager(); // ok
 
-        QString List();
-        int ChangeDirectory(const QString &directory_name);
+        QString List();                                             // ok
+        int ChangeDirectory(const QString &directory_name);         // ok
         int MakeFile(const QString &file_name);
-        int MakeDirectory(const QString &directory_name);
+        int MakeDirectory(const QString &directory_name);           // ok
         int RemoveFile(const QString &file_name);
         int RemoveDirectory(const QString &directory_name);
         int ReadFile(const QString &file_name, QByteArray &content);
