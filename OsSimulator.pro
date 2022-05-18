@@ -11,21 +11,13 @@ CONFIG += c++17
 SOURCES += \
     src/DeviceManager/DiskManager.cpp \
     src/ProcessManager/CPU.cpp \
-<<<<<<< HEAD
-    src/ProcessTest.cpp \
-=======
     #src/Test/ProcessTest.cpp \
->>>>>>> eddf2a3387a352a23610587030b9ef471bbb29bf
     src/ProcessManager/Interupt.cpp \
     src/Test/ProcessMemoryTest.cpp \
     src/UI/mainwindow.cpp \
     src/FileManager/FileManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
-<<<<<<< HEAD
-    #src/MemoryTest.cpp \
-=======
-#    src/Test/MemoryTest.cpp \
->>>>>>> eddf2a3387a352a23610587030b9ef471bbb29bf
+    src/Test/MemoryTest.cpp \
     src/ProcessManager/ProcessManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
 #    src/main.cpp
