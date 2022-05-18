@@ -29,11 +29,11 @@ namespace os {
         const bool CODE;
         const bool DATA;
         pid_t pid; // 页表所属进程
-        int occupy; // 已缓存页的数量
-        int code_now; // 已缓存的代码页数量
-        int code_max; // 代码段最多能缓存的代码页数量
-        int data_now; // 已缓存的数据页数量
-        int data_max; // 数据段最多能缓存的代码页数量
+        size_t occupy; // 已缓存页的数量
+        size_t code_now; // 已缓存的代码页数量
+        size_t code_max; // 代码段最多能缓存的代码页数量
+        size_t data_now; // 已缓存的数据页数量
+        size_t data_max; // 数据段最多能缓存的代码页数量
         QHash<page_t, PtItem> table; // 页表内容，键为虚拟页号
         QVector<page_t> code_queue; // 代码段牺牲队列
         QVector<page_t> data_queue; // 数据段牺牲队列
@@ -49,8 +49,8 @@ namespace os {
         int GetMax(bool typ) { if (typ == CODE) return code_max; else return data_max; } // 获取代码段或数据段的页数上限
         QVector<page_t> GetQueue(bool typ) { if (typ == CODE) return code_queue; else return data_queue; } // 获取代码段或数据段的牺牲队列
         inline void SetOccupy(size_t size) { occupy = size; } // 修改页表中已缓存页的数量
-        inline void SetMax(size_t size, int typ) { if (typ == CODE) code_max = size; else data_max = size; } // 修改代码段或数据段的内存页上限
-        inline void SetNow(size_t size, int typ) { if (typ == CODE) code_now = size; else data_now = size; } // 修改代码段或数据段的当前页数量
+        inline void SetMax(size_t size, bool typ) { if (typ == CODE) code_max = size; else data_max = size; } // 修改代码段或数据段的内存页上限
+        inline void SetNow(size_t size, bool typ) { if (typ == CODE) code_now = size; else data_now = size; } // 修改代码段或数据段的当前页数量
         inline void SetQueue(QVector<page_t> queue, bool typ) { if (typ == CODE) code_queue = queue; else data_queue = queue; } // 修改代码段或数据段的牺牲队列
         void AddPage(page_t vaddress, frame_t paddress); // 增加一个有效物理帧
         frame_t ReplaceCode(page_t new_vaddress); // 替换一个代码页，返回牺牲页的物理帧号

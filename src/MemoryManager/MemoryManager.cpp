@@ -136,16 +136,11 @@ QVector<frame_t> PageTable::PrintOccupying()
     return result;
 }
 
-int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
-{
-    content = "31512dae"
-              "f55ff626"
-              "5666afc5"
-              "1132ace6"
-              "56123548"
-              "acdffcba";
-    return 0;
-}
+//int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
+//{
+//    content.append(Instruction());
+//    return 0;
+//}
 
 MemoryManager::MemoryManager() :
     memory(MEMORY_TOTAL_SIZE, '0'),

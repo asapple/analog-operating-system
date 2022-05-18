@@ -1,5 +1,6 @@
 #include <memory>
 #include <QHash>
+#include <QDebug>
 
 #include "include/ProcessManager/Process.h"
 #include "include/ProcessManager/ProcessManager.h"
@@ -55,24 +56,29 @@ void ProcessManager::UpdateTime() {
  */
 int ProcessManager::Execute(QString file_name) {
     pid_t pid;
-    for (pid = 0; pid < kMaxProcessNum_; pid++) {
+    for (pid = 1; pid <= kMaxProcessNum_; pid++) {
         if (process_list_[pid].state_ == ProcessState::UNUSED) {
             process_list_[pid].state_ = ProcessState::READY;
             break;
         }
     }
+    qDebug() << "[" << pid << "]: Initializing execute " << file_name << "......";
     if (pid == kMaxProcessNum_) {
         return -1;
     }
     int size = MemoryManager::Instance().InitMemory(pid, file_name);
+
     if (size <= 0) {
         MemoryManager::Instance().ReleaseMemory(pid);
         process_list_[pid].state_ = ProcessState::UNUSED;
+        qDebug() << "[" << pid << "]: Error Alloc Memory When initialize " << file_name << "!";
         return -1+size;
     }
     process_list_[pid].size_ += size;
     process_list_[pid].start_time_ = cur_time_;
+    process_list_[pid].file_name_ = file_name;
     scheduler_->PushProcess(pid);
+    qDebug() << "[ " << pid << " ]: Sucecessfully initialize " << file_name << ".";
     return 0;
 }
 /**
@@ -82,7 +88,7 @@ int ProcessManager::Execute(QString file_name) {
  */
 int ProcessManager::Fork(pid_t ppid) {
     pid_t pid;
-    for (pid = 0; pid < kMaxProcessNum_; pid++) {
+    for (pid = 1; pid <= kMaxProcessNum_; pid++) {
         if (process_list_[pid].state_ == ProcessState::UNUSED) {
             break;
         }
@@ -99,10 +105,11 @@ int ProcessManager::Fork(pid_t ppid) {
     process_list_[pid] = process_list_[ppid];
     process_list_[pid].pid_ = pid;
     process_list_[pid].ppid_ = ppid;
-    process_list_[pid].state_ = ProcessState::UNUSED;
+    process_list_[pid].state_ = ProcessState::READY;
     process_list_[pid].start_time_ = cur_time_;
     process_list_[pid].run_time_ = 0;
     scheduler_->PushProcess(pid);
+    qDebug() <<"[" <<  pid << "]: Initialized by Fork Process " << ppid;
     return 0;
 }
 /**
@@ -114,25 +121,31 @@ int ProcessManager::CheckKilled()
 {
     // 检查当前正在执行的进程
     if (process_list_[run_process_].state_ == ProcessState::KILLED) {
+        MemoryManager::Instance().ReleaseMemory(run_process_);
+        qDebug() << "[" << run_process_ << "]("<< process_list_[run_process_] .file_name_ << "): has already been killed.";
         process_list_[run_process_] = PCB();
         process_list_[run_process_].pid_ = run_process_;
     }
     // 检查就绪队列
     for (auto pid:GetReadyQueue()) {
         if (process_list_[pid].state_ == ProcessState::KILLED) {
+            MemoryManager::Instance().ReleaseMemory(pid);
+            qDebug() << "[" << pid << "]("<< process_list_[pid] .file_name_ << "): has already been killed.";
             process_list_[pid] = PCB();
             process_list_[pid].pid_ = pid;
+            scheduler_->RemoveProcess(pid);
         }
-        scheduler_->RemoveProcess(pid);
     }
     // 检查等待队列
     for (auto it = wait_queue_.begin(); it != wait_queue_.end(); it++) {
         if (process_list_[*it].state_ == ProcessState::KILLED) {
+            MemoryManager::Instance().ReleaseMemory(*it);
+            qDebug() << "[ " << *it << " ]("<< process_list_[*it] .file_name_ << "): has already been killed.";
             process_list_[*it] = PCB();
             process_list_[*it].pid_ = *it;
+            // TODO 对应设备删除队列
+            DeviceManager::Instance().RemoveProcess(*it);
         }
-        // TODO 对应设备删除队列
-        DeviceManager::Instance().RemoveProcess(*it);
     }
     return 0;
 }

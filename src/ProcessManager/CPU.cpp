@@ -1,4 +1,5 @@
 #include <QMutexLocker>
+#include <QDebug>
 
 #include "include/ProcessManager/CPU.h"
 #include "include/ProcessManager/ProcessManager.h"
@@ -8,7 +9,7 @@
 
 namespace os {
 CPU::CPU(int time_slot)
-    : time_slot_(time_slot)
+    : time_slot_(time_slot), current_run_(0), cur_tick_(0)
 {}
 /**
  * @brief CPU::run
@@ -21,38 +22,44 @@ void CPU::run() {
         ProcessManager& pm = ProcessManager::Instance();
         MemoryManager& mm = MemoryManager::Instance();
         DeviceManager& dm = DeviceManager::Instance();
-        PCB& pcb = pm.GetPCB(current_run_);
+        PCB& last_pcb = pm.GetPCB(current_run_);
         pid_t next_run = -1;
         // 若为抢占式或者当前进程不再是运行状态，则进行调度
-        if (pm.is_preemptive_ || pcb.state_ != ProcessState::RUNNING) {
-            next_run = pm.PollProcess();
-        }
-        // 成功进行调度调度，则换下当前进程，更换为下一个进程
-        if (next_run != -1) {
-            // 该进程被抢占，则需要加入就绪队列
-            if (pcb.state_ == ProcessState::RUNNING) {
-                pcb.state_ = ProcessState::READY;
-                pm.pushProcess(current_run_);
+        if (pm.is_preemptive_ || last_pcb.state_ != ProcessState::RUNNING) {
+            // 若当前进程不再为运行状态，则重新设置当前进程
+            if (last_pcb.state_ != ProcessState::RUNNING) {
+                current_run_  = 0;
             }
-            current_run_ = next_run;
+            next_run = pm.PollProcess();
+            // 成功进行调度，则换下当前进程，更换为下一个进程
+            if (next_run != -1) {
+                // 该进程被抢占，则需要加入就绪队列
+                if (last_pcb.state_ == ProcessState::RUNNING) {
+                    last_pcb.state_ = ProcessState::READY;
+                    pm.pushProcess(current_run_);
+                }
+                current_run_ = next_run;
+            }
+            pm.run_process_ = current_run_;
         }
-        pm.run_process_ = current_run_;
         // 当前有任务需要处理
         if (current_run_ != 0) {
-            pcb = pm.GetPCB(current_run_);
+            PCB& cpcb = pm.GetPCB(current_run_);
+            cpcb.state_ = ProcessState::RUNNING;
             // 取指令
-            if (pcb.ins_time_ == 0) {
+            if (cpcb.ins_time_ == 0) {
                 QByteArray buffer;
-                int error = mm.GetCode(current_run_, pcb.pc_, buffer);
+                int error = mm.GetCode(current_run_, cpcb.pc_, buffer);
                 if (error < 0) {
                     // TODO: 错误处理
                 }
-                pcb.ir_ = buffer.data();
-                pcb.pc_ += sizeof pcb.ir_;
+                cpcb.ir_ = buffer.data();
+                cpcb.pc_ += sizeof cpcb.ir_;
             }
             // 执行指令
-            if (ExecuteInstruction(pcb) < 0) {
+            if (ExecuteInstruction(cpcb) < 0) {
                 //TODO: 错误处理
+                qDebug() << "[ " << cpcb.pid_ <<" ]: [ERROR] Illegal Instruction";
             }
         }
 
@@ -72,12 +79,14 @@ void CPU::run() {
 int CPU::ExecuteInstruction(PCB& pcb)
 {
     int size;
+    pid_t child;
     switch (pcb.ir_.type) {
          // 访存指令
     case InsType::ACCESS:
         if (MemoryManager::Instance().AccessMemory(pcb.pid_, pcb.ir_.op) < 0) {
             // TODO:错误处理
         }
+        qDebug() <<"[" <<  pcb.pid_ << "]: access " << pcb.ir_.op;
         break;
          // 计算指令
     case InsType::COMPUTE:
@@ -85,6 +94,7 @@ int CPU::ExecuteInstruction(PCB& pcb)
             pcb.ins_time_ = pcb.ir_.op;
         }
         pcb.ins_time_--;
+        qDebug() <<"[" <<  pcb.pid_ << "]: run compute 1 cycle";
         break;
          // 设备访问指令
     case InsType::DEVICE:
@@ -96,9 +106,11 @@ int CPU::ExecuteInstruction(PCB& pcb)
         break;
          // fork指令
     case InsType::FORK:
-        if (ProcessManager::Instance().Fork(pcb.pid_) < 0) {
+        child = ProcessManager::Instance().Fork(pcb.pid_);
+        if (child < 0) {
             // TODO: 错误处理
         }
+        qDebug() <<"[" <<  pcb.pid_ << "]: has been Forked by child Process " << child;
         break;
         // 优先级改变指令
     case InsType::PRIORITY:
@@ -116,6 +128,7 @@ int CPU::ExecuteInstruction(PCB& pcb)
         // 进程退出指令
     case InsType::QUIT:
         pcb.state_ = ProcessState::KILLED;
+        qDebug() <<"[" <<  pcb.pid_ << "]: quit";
         break;
     default:
         // 异常退出
