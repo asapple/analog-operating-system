@@ -20,8 +20,8 @@ namespace os {
         ~PtItem() {}
         void SetVi(bool value) { vi_bit = value; } // 设置有效无效位
         bool GetVi() { return vi_bit; } // 获取有效无效位
-        void SetAddr(frame_t address) { frame_addr = address; } // 设置物理帧号
-        frame_t GetAddr() { return frame_addr; } // 获取物理帧号
+        void SetFrame(frame_t address) { frame_addr = address; } // 设置物理帧号
+        frame_t GetFrame() { return frame_addr; } // 获取物理帧号
     };
 
     class PageTable {
@@ -78,12 +78,68 @@ namespace os {
     public:
         static MemoryManager& Instance();
         MemoryManager();
+        /*
+         * @brief 初始化进程的内存空间
+         * @param pid 进程的pid号
+         * @param file_name 进程的可执行文件名
+         * @return 正确执行时，返回初始分配给进程的空间大小，单位为字节
+         * @return 错误码-1：传入的pid已拥有页表
+         * @return 错误码-2，内存不足
+         * @return 错误码-4，可执行文件长度不是指令的整数倍
+         * @return 错误码-5，文件系统读取出错
+         */
         int InitMemory(pid_t pid, const QString& file_name);
+        /*
+         * @brief 取出指定位置的一条指令
+         * @param pid 进程的pid号
+         * @param virt_addr 所需指令的虚拟地址
+         * @param content 用于接收指令的字节数组
+         * @return 正确执行时，返回0
+         * @return 错误码-1：该进程没有页表
+         * @return 错误码-3，给出的地址超出可执行文件范围
+         * @return 错误码-4，从给出的地址到文件结束的长度不足一条指令的长度
+         * @return 错误码-5，文件系统读取出错
+         */
         int GetCode(pid_t pid, size_t virt_addr, QByteArray& content);
+        /*
+         * @brief 读取指定位置的一页数据
+         * @param pid 进程的pid号
+         * @param virt_addr 数据所在页的虚拟地址
+         * @return 正确执行时，返回0
+         * @return 错误码-1：该进程没有页表
+         * @return 错误码-2，内存不足
+         */
         int AccessMemory(pid_t pid, size_t virt_addr); //ps. content 默认缺省，无实际含义
+        /*
+         * @brief 使用一个进程的内存空间初始化另一个进程
+         * @param pid 被初始话的进程的pid号
+         * @param ppid 已存在的进程的pid号
+         * @return 正确执行时，返回0
+         * @return 错误码-1：ppid进程没有页表
+         * @return 错误码-2，内存不足
+         */
         int ForkMemory(pid_t pid, pid_t ppid); // 拷贝一个进程的内存作为另一进程的初始内存
+        /*
+         * @brief 提高一个进程所能使用的内存空间上限
+         * @param pid 进程的pid号
+         * @param size 进程想要增加的空间大小，单位为字节
+         * @return 正确执行时，返回0
+         * @return 错误码-1：该进程没有页表
+         */
         int MoreMemory(pid_t pid, size_t size);
+        /*
+         * @brief 回收释放一个进程的全部内存空间
+         * @param pid 进程的pid号
+         * @return 正确执行时，返回0
+         * @return 错误码-1：该进程没有页表
+         */
         int ReleaseMemory(pid_t pid);
+        /*
+         * @brief 打印一个进程所占有的物理帧的真号
+         * @param pid 进程的pid号
+         * @return 正确执行时，返回0
+         * @return 错误码-1：该进程没有页表
+         */
         int PrintOccupying(pid_t pid, QVector<frame_t>& Occupying);
     };
 }
