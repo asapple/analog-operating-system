@@ -163,11 +163,17 @@ int ProcessManager::CheckKilled()
  * @brief ProcessManager::Kill
  * 终止进程
  * @param pid 进程号
- * @return 返回码，成功返回0，若进程已经被终止则失败返回-1
+ * @return 返回码
+ * @return 成功返回0
+ * @return 若进程号不合法为-1
+ * @return 若进程已经被终止则失败返回-2
  */
 int ProcessManager::Kill(pid_t pid) {
-    if (process_list_[pid].state_ == ProcessState::UNUSED || process_list_[pid].state_ == ProcessState::KILLED) {
+    if (pid<0 || pid > kMaxProcessNum_) {
         return -1;
+    }
+    if (process_list_[pid].state_ == ProcessState::UNUSED || process_list_[pid].state_ == ProcessState::KILLED) {
+        return -2;
     }
     process_list_[pid].state_ = ProcessState::KILLED;
     return 0;

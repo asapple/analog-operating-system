@@ -182,8 +182,7 @@ void frmMain::on_exec_pushButton_clicked()
 //        ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="kill") {
         // 调用文件系统的FileManager::Kill()方法
-        QString str="";
-        ui->echo_textBrowser->append(str);
+        os::ProcessManager::Instance().Kill(cmd[1].toInt());
     }else if (cmd[0]=="ps") {
         // 调用文件系统的FileManager::ProcessState()方法
         QString str="";

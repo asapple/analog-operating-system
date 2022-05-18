@@ -394,10 +394,6 @@ int MemoryManager::ReleaseMemory(pid_t pid)
         if (i->GetVi()) // 解除对有效页的占用
             bitmap[i->GetFrame()] = -1;
     }
-<<<<<<< HEAD
-//    pt_iter->~PageTable(); // 析构页表
-=======
->>>>>>> 8ece510ce0a0419c889557e310b123a0165c1727
     pt_meta.erase(pt_iter); // 删除映射
     return 0;
 }
