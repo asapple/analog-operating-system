@@ -29,6 +29,7 @@ private slots:
     void on_btnMenu_Min_clicked();
     void on_btnMenu_Max_clicked();
     void on_btnMenu_Close_clicked();
+    void on_exec_pushButton_clicked();
 };
 
 #endif // UIDEMO01_H
