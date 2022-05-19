@@ -38,7 +38,6 @@ void frmMain::initForm()
     IconHelper::setIcon(ui->btnMenu_Min, 0xf068);
     IconHelper::setIcon(ui->btnMenu_Max, 0xf067);
     IconHelper::setIcon(ui->btnMenu_Close, 0xf00d);
-
     //ui->widgetMenu->setVisible(false);
     ui->widgetTitle->installEventFilter(this);
     ui->widgetTitle->setProperty("form", "title");
@@ -87,10 +86,55 @@ void frmMain::initForm()
         btn->setCheckable(true);
         connect(btn, SIGNAL(clicked()), this, SLOT(buttonClick()));
     }
+    // 设置Desk的表头
+    QTableWidgetItem *headerItem;
+    QStringList headerText;
+    headerText<<"磁 块 号"<<"磁 块 大 小"<<"已 使 用"<<"空 闲 空 间";  //表头标题用QStringList来表示
+    //ui->tableWidget->setHorizontalHeaderLabels(headerText);
+    ui->tableWidget->setColumnCount(headerText.count());//列数设置为与 headerText的行数相等
+    for (int i=0;i<ui->tableWidget->columnCount();i++)//列编号从0开始
+    {
+        //cellItem=ui->tableInfo->horizontalHeaderItem(i);
+        headerItem=new QTableWidgetItem(headerText.at(i)); //新建一个QTableWidgetItem， headerText.at(i)获取headerText的i行字符串
+        QFont font=headerItem->font();//获取原有字体设置
+        font.setBold(true);//设置为粗体
+        font.setPointSize(12);//字体大小
+        headerItem->setForeground(Qt::blue);//字体颜色
 
+        headerItem->setFont(font);//设置字体
+        ui->tableWidget->setHorizontalHeaderItem(i,headerItem); //设置表头单元格的Item
+    }
+    setDeskTable();
     ui->btnMain->click();
 }
+// 初始化DeskTable
+void frmMain::setDeskTable(){
+    //使用createItemsARow()
+    ui->tableWidget->insertRow(0);//添加第0行
+    createItemsARow(0,0,64,64,0);//往第0行里写入数据
+    // 写个for循环一行一行的加入
+}
+void frmMain::createItemsARow(int rowNo,int addr,int size,int used,int free)
+{
 
+    QTableWidgetItem    *item;
+    item=new  QTableWidgetItem(QString::number(addr));
+    ui->tableWidget->setItem(rowNo,0,item);
+
+    item=new  QTableWidgetItem(QString::number(size));
+    ui->tableWidget->setItem(rowNo,1,item);
+
+    item=new  QTableWidgetItem(QString::number(used));
+    ui->tableWidget->setItem(rowNo,2,item);
+
+    item=new  QTableWidgetItem(QString::number(free));
+    if(free == 0){// 使用不同颜色的文字，表示空间是否空余
+        item->setForeground(Qt::red);
+    }else {
+        item->setForeground(Qt::green);
+    }
+    ui->tableWidget->setItem(rowNo,3,item);
+}
 void frmMain::buttonClick()
 {
     QToolButton *b = (QToolButton *)sender();
@@ -107,10 +151,12 @@ void frmMain::buttonClick()
         ui->stackedWidget->setCurrentIndex(1);
     } else if (name == "Process") {
         ui->stackedWidget->setCurrentIndex(2);
-    } else if (name == "Desk") {
+    } else if (name == "DeskTable") {
         ui->stackedWidget->setCurrentIndex(3);
-    } else if (name == "Device") {
+    }else if (name == "Desk") {
         ui->stackedWidget->setCurrentIndex(4);
+    } else if (name == "Device") {
+        ui->stackedWidget->setCurrentIndex(5);
     }
 }
 
@@ -176,9 +222,9 @@ void frmMain::on_cmd_lineEdit_returnPressed()
     }else if (cmd[0]=="rmdir") {
             // 调用文件系统的FileManager::RemoveDirectory()方法
             QString str="";
-            if (os::FileManager::Instance().RemoveDirectory(cmd[1]) < 0) {
-                return;
-            }
+//            if (os::FileManager::Instance().RemoveDirectory(cmd[1]) < 0) {
+//                return;
+//            }
             ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="mkdir") {
     // 调用文件系统的FileManager::MakeDirectory()方法

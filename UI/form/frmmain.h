@@ -20,7 +20,8 @@ protected:
 
 private:
     Ui::frmMain *ui;
-
+    void setDeskTable();
+    void createItemsARow(int rowNo, int addr,int size,int used,int free);
 private slots:
     void initForm();
     void buttonClick();

@@ -135,6 +135,26 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="toolButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>DeskTable</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../other/main.qrc">
+             <normaloff>:/image/main_config.png</normaloff>:/image/main_config.png</iconset>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QToolButton" name="btnData">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
@@ -340,7 +360,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="shell_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -432,6 +452,34 @@
           <string>数据寄存器：</string>
          </property>
         </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="deskTable_page">
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="totTab_label">
+         <property name="text">
+          <string>磁盘空间：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="usedTab_label">
+         <property name="text">
+          <string>已使用：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="freeTab_label">
+         <property name="text">
+          <string>剩余：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QTableWidget" name="tableWidget"/>
        </item>
       </layout>
      </widget>
