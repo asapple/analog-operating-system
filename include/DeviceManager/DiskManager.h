@@ -17,7 +17,6 @@ namespace os
     {
     private:
         DiskManager(int block_size = BLOCK_SIZE, int disk_size = DISk_SIZE);
-
     public:
         const int block_size_;
         const int disk_size_;
