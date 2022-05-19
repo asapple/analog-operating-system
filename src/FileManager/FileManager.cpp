@@ -1,6 +1,7 @@
 #include "include/Common/Common.h"
 #include "include/FileManager/FileManager.h"
 #include "include/ProcessManager/Instruction.h"
+#include "include/DeviceManager/DiskManager.h"
 #include <QDir>
 #include <QFile>
 #include <QDebug>
@@ -38,6 +39,9 @@ inode_t FileManager::InsertFCB(int attribute, QString fcb_name, const FCB& fcb)
     fm_fcb_.push_back(FCB());
     inode_t inode = fm_inodes_.size();
     fm_inodes_.push_back(Inode(attribute, fcb_name, fcb_id, fcb.data_.size(), umask_));
+    const int block_size = DiskManager::Instance().block_size_;
+    fm_inodes_[inode].dnum_ = 1 + (fm_inodes_[inode].size_ + block_size - 1)/block_size ;
+    fm_inodes_[inode].dno_ = DiskManager::Instance().RequestDisk(inode, fm_inodes_[inode].dnum_ );
     return inode;
 }
 /**
@@ -348,6 +352,7 @@ int FileManager::RemoveFile(QString file_name)
     FCB& cur = fm_fcb_[fm_inodes_[pre].fcb_];
     for (auto iter = cur.files_.begin(); iter != cur.files_.end(); iter++) {
         if (iter->name_ == file_name) {
+            DiskManager::Instance().ReleaseDisk(iter->inode_);
             cur.files_.erase(iter);
             return 0;
         }
@@ -382,6 +387,7 @@ int FileManager::RemoveDirectory(QString directory_name)
     FCB& cur = fm_fcb_[fm_inodes_[pre].fcb_];
     for (auto iter = cur.subdirs_.begin(); iter != cur.subdirs_.end(); iter++) {
         if (iter->name_ == directory_name) {
+            DiskManager::Instance().ReleaseDisk(iter->inode_);
             cur.subdirs_.erase(iter);
             return 0;
         }
@@ -428,11 +434,15 @@ int FileManager::ReadFile(QString file_name, QByteArray &content)
     content = cur.data_;
     return 0;
 }
-
-QString FileManager::GetCWD()
+/**
+ * @brief FileManager::GetFullPath
+ * @param inode i节点号
+ * @return i节点对应的完整路径
+ */
+QString FileManager::GetFullPath(inode_t inode)
 {
     QString file_name;
-    inode_t  cur = cwd_;
+    inode_t  cur = inode;
     while (cur != -1) {
         file_name.push_front("/");
         Inode ino = fm_inodes_[cur];
@@ -440,4 +450,12 @@ QString FileManager::GetCWD()
         cur = fm_fcb_[ino.fcb_].pre.inode_;
     }
     return file_name;
+}
+/**
+ * @brief FileManager::GetCWD
+ * @return 当前目录路径
+ */
+QString FileManager::GetCWD()
+{
+    return GetFullPath(cwd_);
 }

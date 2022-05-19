@@ -3,6 +3,7 @@
 #include "UI/core_common/iconhelper.h"
 #include "UI/core_common/quihelper.h"
 
+#include "include/FileManager/FileManager.h"
 #include "include/ProcessManager/ProcessManager.h"
 
 frmMain::frmMain(QWidget *parent) : QDialog(parent), ui(new Ui::frmMain)
@@ -149,31 +150,49 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         return;
     else if (cmd[0]=="ls") {
         // 调用文件系统的FileManager::List()方法
-        QString str="";
-
+        QVector<QString> files, dirs;
+        if (os::FileManager::Instance().List(files,dirs) < 0) {
+            // 错误处理
+            return;
+        }
+        QString str;
+        //TODO 格式化打印，要求文件和文件夹有区分
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="cd") {
         // 调用文件系统的FileManager::ChangeDirectory()方法
-        QString str="";
-
-        ui->pwd_label->setText(str);
+        if (os::FileManager::Instance().ChangeDirectory(cmd[1]) < 0) {
+            return;
+        }
+//        ui->pwd_label->setText(str);
     }else if (cmd[0]=="clear") {
         ui->echo_textBrowser->clear();
     }else if (cmd[0]=="rm") {
         // 调用文件系统的FileManager::RemoveFile()方法
         QString str="";
+        if (os::FileManager::Instance().RemoveFile(cmd[1]) < 0) {
+            return;
+        }
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="rmdir") {
             // 调用文件系统的FileManager::RemoveDirectory()方法
             QString str="";
+            if (os::FileManager::Instance().RemoveDirectory(cmd[1]) < 0) {
+                return;
+            }
             ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="mkdir") {
     // 调用文件系统的FileManager::MakeDirectory()方法
     QString str="";
+    if (os::FileManager::Instance().MakeDirectory(cmd[1]) < 0) {
+        return;
+    }
     ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="mkfile") {
         // 调用文件系统的FileManager::MakeFile()方法
         QString str="";
+        if (os::FileManager::Instance().MakeFile(cmd[1]) < 0) {
+            return;
+        }
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="exec") {
         // 调用文件系统的FileManager::Execute()方法

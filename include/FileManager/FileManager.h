@@ -19,6 +19,8 @@ namespace os
         int attribute_; // 0 : dir, 1 : file
         QString fcb_name_;
 
+        int dno_;
+        int dnum_;
         Inode(int attribute, QString fcb_name, int fcb, int size, int access_mode, int n_links);
     };
 
@@ -74,7 +76,8 @@ namespace os
         FileManager(const QString& path, int umask = 0x644);  // ok
         ~FileManager();
     public:
-        FileManager& Instance(const QString& forkroot = "./files");
+        static FileManager& Instance(const QString& forkroot = "./files");
+        QString GetFullPath(inode_t inode);
         QString GetCWD();
 
         int List(QVector<QString>& files, QVector<QString>& dirs );                                              // ok
