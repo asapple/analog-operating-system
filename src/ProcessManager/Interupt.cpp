@@ -43,6 +43,7 @@ int InteruptManager::InteruptDetect() {
                     qDebug() << "[" << it->pid_ <<"] "<< "wake up from wait device" << it->dev_num_;
                     pcb.state_ = ProcessState::READY;
                     pm.pushProcess(pcb.pid_);
+                    pm.RemoveWaitQueue(pcb.pid_);
                 }
             }
             interupt_queue_[i].clear();

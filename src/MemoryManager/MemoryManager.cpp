@@ -1,5 +1,6 @@
 #include "include/MemoryManager/MemoryManager.h"
 #include "include/ProcessManager/Instruction.h"
+#include "include/FileManager/FileManager.h"
 #include <QDebug>
 using namespace os;
 
@@ -136,19 +137,6 @@ QVector<frame_t> PageTable::PrintOccupying()
     }
     return result;
 }
-// TODO 文件系统完成后删除
-int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
-{
-    content.append(Instruction(InsType::COMPUTE, 2));
-    content.append(Instruction(InsType::FORK, 2));
-    content.append(Instruction(InsType::COMPUTE, 3));
-    content.append(Instruction(InsType::DEVICE, 3, 0));
-    content.append(Instruction(InsType::PRIORITY, 2));
-    content.append(Instruction(InsType::ACCESS, 33));
-    content.append(Instruction(InsType::FORK, 2));
-    content.append(Instruction(InsType::QUIT));
-    return 0;
-}
 
 MemoryManager::MemoryManager() :
     CODE(true), DATA(false),
@@ -202,9 +190,8 @@ void MemoryManager::CopyBytes(QByteArray& dest, int dstart, QByteArray& sour, in
 int MemoryManager::ReadBytes(QString file_name, page_t page, offset_t offset, size_t size, QByteArray& content)
 {
     QByteArray source;
-    //TODO 文件系统完善后改为
-//    int error = FileManager::Instance().ReadFile(file_name, source);
-    int error = ReadFile(file_name, source); // 读取文件
+    int error = FileManager::Instance().ReadFile(file_name, source);
+//    int error = ReadFile(file_name, source); // 读取文件
     if (error) return error; // 错误码不为0，上报错误
     int start = page * 8 + offset; // 计算相对与文件头的偏移量
     if (start >= source.size()) return 254; // 起始地址超出文件范围

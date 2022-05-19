@@ -142,10 +142,14 @@ void frmMain::on_btnMenu_Close_clicked()
 
 void frmMain::on_cmd_lineEdit_returnPressed()
 {
+    using namespace os;
+    using namespace Ui;
+
     QString cmds = ui->cmd_lineEdit->text();
     ui->cmd_lineEdit->clear();// 清空命令行
     ui->echo_textBrowser->append("$ "+cmds);
     QStringList cmd = cmds.split(" ");
+
     if(cmd.empty())
         return;
     else if (cmd[0]=="ls") {
@@ -157,27 +161,33 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         }
         QString str;
         //TODO 格式化打印，要求文件和文件夹有区分
+        for (auto file = files.begin(); file != files.end(); file++) {
+            str += TEXT_COLOR_GREEN(*file) + "  ";
+        }
+        for (auto dir = dirs.begin(); dir != dirs.end(); dir++) {
+            str += TEXT_COLOR_BLUE(*dir+"/") + "  ";
+        }
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="cd") {
         // 调用文件系统的FileManager::ChangeDirectory()方法
         if (os::FileManager::Instance().ChangeDirectory(cmd[1]) < 0) {
-            return;
+            ui->echo_textBrowser->append("Change Directory Error");
         }
-//        ui->pwd_label->setText(str);
+        ui->pwd_label->setText("PWD: "+os::FileManager::Instance().GetCWD());
     }else if (cmd[0]=="clear") {
         ui->echo_textBrowser->clear();
     }else if (cmd[0]=="rm") {
         // 调用文件系统的FileManager::RemoveFile()方法
         QString str="";
         if (os::FileManager::Instance().RemoveFile(cmd[1]) < 0) {
-            return;
+            str.append("Remove File Error");
         }
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="rmdir") {
-            // 调用文件系统的FileManager::RemoveDirectory()方法
+            // 调用文件系统的FileManager::RemoveMyDirectory()方法
             QString str="";
-            if (os::FileManager::Instance().RemoveDirectory(cmd[1]) < 0) {
-                return;
+            if (os::FileManager::Instance().RemoveMyDirectory(cmd[1]) < 0) {
+                str.append("RemoveDirectory Error");
             }
             ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="mkdir") {
@@ -191,7 +201,7 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         // 调用文件系统的FileManager::MakeFile()方法
         QString str="";
         if (os::FileManager::Instance().MakeFile(cmd[1]) < 0) {
-            return;
+            str.append("Makefile Error");
         }
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="exec") {
@@ -204,7 +214,20 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         os::ProcessManager::Instance().Kill(cmd[1].toInt());
     }else if (cmd[0]=="ps") {
         // 调用文件系统的FileManager::ProcessState()方法
-        QString str="";
+        QString str;
+        QString format = "%1\t%2\t%3\t%4\t%5\t%6\t%7\n";
+        str.append(QString(format).arg("PID","PPID", "S","SIZE","PRI", "TIME","CMD"));
+        auto pid = ProcessManager::Instance().GetRunProcess();
+        PCB pcb = ProcessManager::Instance().GetPCB(pid);
+        str.append(QString(format).arg(QString::number(pcb.pid_), QString::number(pcb.ppid_), "Run", QString::number((int)pcb.size_), QString::number(pcb.priority_), QString::number(pcb.run_time_), pcb.file_name_));
+        for (auto pid:ProcessManager::Instance().GetReadyQueue()) {
+            PCB pcb = ProcessManager::Instance().GetPCB(pid);
+            str.append(QString(format).arg(QString::number(pcb.pid_), QString::number(pcb.ppid_), "Ready", QString::number((int)pcb.size_), QString::number(pcb.priority_), QString::number(pcb.run_time_), pcb.file_name_));
+        }
+        for (auto pid:ProcessManager::Instance().GetWaitQueue()) {
+            PCB pcb = ProcessManager::Instance().GetPCB(pid);
+            str.append(QString(format).arg(QString::number(pcb.pid_), QString::number(pcb.ppid_), "Wait", QString::number((int)pcb.size_), QString::number(pcb.priority_), QString::number(pcb.run_time_), pcb.file_name_));
+        }
         ui->echo_textBrowser->append(str);
     }else{
         ui->echo_textBrowser->append(QString("command not definded;"));

@@ -350,7 +350,7 @@
        <item>
         <widget class="QLabel" name="pwd_label">
          <property name="text">
-          <string>PWD：/root</string>
+          <string>PWD：/</string>
          </property>
         </widget>
        </item>

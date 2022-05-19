@@ -24,22 +24,21 @@ namespace os
     // return: occupied blocks id
     int DiskManager::RequestDisk(inode_t file, int blocks_need)
     {
-        QVector<int> return_free = QVector<int>();
         bool is_found = false;
         for (int i = 0; i < block_num_; i++) {
             // 查找连续blocks_need个空闲块
-            if (disk_bitmap_.testBit(i)) {
+            if (!disk_bitmap_.testBit(i)) {
                 is_found = true;
                 int j = 0;
                 for (j = 0; j < blocks_need; j++) {
-                    if (!disk_bitmap_.testBit(i+j)) {
+                    if (disk_bitmap_.testBit(i+j)) {
                         is_found = false;
                         break;
                     }
                 }
                 // 找到了
                 if (is_found) {
-                    for (int k = i; k < j; k++) {
+                    for (int k = i; k < i + j; k++) {
                         disk_bitmap_.setBit(k);
                         blocks_[k].owner_ = file;
                     }
@@ -76,7 +75,7 @@ namespace os
     QVector<int> DiskManager::GetDisk()
     {
         QVector<int> return_occupied = QVector<int>(); //定义需 返回磁盘已经被占用的容器
-        for (int i = 0; i < return_occupied.size(); i++)
+        for (int i = 0; i < block_num_; i++)
         {
             if (disk_bitmap_.testBit(i))
             {                              //该方法表示 i处 若为1返回true，否则返回 false

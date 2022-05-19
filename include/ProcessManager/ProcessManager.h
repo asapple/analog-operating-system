@@ -60,6 +60,9 @@ public:
 
     inline PCB& GetPCB(pid_t pid) { return process_list_[pid]; };
     inline const QList<pid_t> GetReadyQueue() { return scheduler_->GetReadyQueue(); };
+    inline const pid_t GetRunProcess() {return run_process_;}
+    inline const QList<pid_t> GetWaitQueue() { return wait_queue_; }
+    inline bool RemoveWaitQueue(pid_t pid) { return wait_queue_.removeOne(pid); }
     void UpdateTime();
 
     int CheckKilled();

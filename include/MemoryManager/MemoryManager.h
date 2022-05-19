@@ -76,9 +76,9 @@ namespace os {
         int ReadBytes(QString file_name, page_t page, offset_t offset, size_t size, QByteArray& content); // 从文件指定位置读取指定长度的字节串
         int ReadFile(const QString& file_name, QByteArray& content); // 测试桩
         void PrintInfo(QString str); // 打印信息
+        MemoryManager();
     public:
         static MemoryManager& Instance();
-        MemoryManager();
         /*
          * @brief 初始化进程的内存空间
          * @param pid 进程的pid号

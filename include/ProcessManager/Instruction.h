@@ -2,6 +2,8 @@
 #define INSTRUCTION_H
 #include <QString>
 #include <QByteArray>
+#include <QStringList>
+#include <QDebug>
 namespace os {
 /**
  * @brief 指令类型
@@ -37,12 +39,14 @@ struct Instruction {
         :type(type), op1(op1), op2(op2)
     {}
     Instruction(QString line) {
-        type = static_cast<InsType>(line.at(0).toLatin1());
-        if (type != InsType::DEVICE) {
-            op = line.section(' ',1).toInt();
-        } else {
-            op1 = line.section(' ',1).toInt();
-            op2 = line.section(' ',2).toInt();
+        QTextStream qts(&line);
+        char str;
+        qts >> str;
+        type = static_cast<InsType>(str);
+        if (type == InsType::DEVICE) {
+           qts >> op1 >> op2;
+        } else if (type != InsType::QUIT && type != InsType::FORK){
+            qts >> op;
         }
     }
     inline Instruction(char* buf) {
@@ -50,6 +54,15 @@ struct Instruction {
     }
     inline operator QByteArray() {
         return QByteArray(reinterpret_cast<char*>(this),sizeof(Instruction));
+    }
+    inline operator QString() {
+        if (type == InsType::DEVICE) {
+            return QString("%1 %2 %3\n").arg(QString((char)type), QString::number(op1), QString::number(op2));
+        } else if (type == InsType::QUIT || type == InsType::FORK) {
+            return QString((char)type)+"\n";
+        } else {
+            return QString("%1 %2\n").arg(QString((char)type), QString::number(op));
+        }
     }
 };
 }

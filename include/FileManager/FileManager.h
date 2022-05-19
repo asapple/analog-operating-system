@@ -85,7 +85,7 @@ namespace os
         int MakeFile(QString file_name);                      // ok
         int MakeDirectory(QString directory_name);            // ok
         int RemoveFile(QString file_name);                    // ok
-        int RemoveDirectory(QString directory_name);          // ok
+        int RemoveMyDirectory(QString directory_name);          // ok
         int ReadFile(QString file_name, QByteArray &content); // ok
     };
 }

@@ -4,6 +4,14 @@
 #include <QDialog>
 
 namespace Ui {
+inline QString TEXT_COLOR_GREEN(QString str) {
+    return  "<font color=green>" +str +"</font>" + "<font color=black></font>";
+}
+
+inline QString TEXT_COLOR_BLUE(QString str) {
+    return  "<font color=blue>" +str +"</font>" + "<font color=black></font>";
+}
+
 class frmMain;
 }
 

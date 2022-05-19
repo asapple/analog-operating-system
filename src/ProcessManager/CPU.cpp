@@ -119,7 +119,7 @@ int CPU::ExecuteInstruction(PCB& pcb)
         break;
         // 访存指令
     case InsType::MEMORY:
-        size = MemoryManager::Instance().MoreMemory(pcb.pid_, pcb.size_);
+        size = MemoryManager::Instance().MoreMemory(pcb.pid_, pcb.ir_.op);
         if (size < 0) {
             // TODO: 错误处理
         } else {
