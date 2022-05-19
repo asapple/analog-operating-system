@@ -20,7 +20,9 @@ SOURCES += \
     #src/Test/MemoryTest.cpp \
     #src/Test/ProcessTest.cpp \
     #src/Test/ProcessMemoryTest.cpp \
-    src/Test/IntegretedTest.cpp \
+    src/Test/DeviceTest.cpp \
+    src/Test/DiskTest.cpp \
+#    src/Test/IntegretedTest.cpp \
 #    src/main.cpp
 
 HEADERS += \
@@ -36,10 +38,10 @@ HEADERS += \
     include/ProcessManager/ProcessManager.h \
 
 # UI模块引入
-SOURCES += $$files(UI/*.cpp, true)
-HEADERS += $$files(UI/*.h, true)
-RESOURCES += $$files(UI/*.qrc, true)
-FORMS += UI/form/frmmain.ui
+#SOURCES += $$files(UI/*.cpp, true)
+#HEADERS += $$files(UI/*.h, true)
+#RESOURCES += $$files(UI/*.qrc, true)
+#FORMS += UI/form/frmmain.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

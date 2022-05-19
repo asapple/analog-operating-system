@@ -6,6 +6,7 @@ namespace os
         :block_size_(block_size),
          disk_size_(disk_size),
          block_num_((disk_size+block_size-1) / block_size),
+
          disk_bitmap_(QBitArray(block_num_, false)),
          blocks_(block_num_)
     {
@@ -16,8 +17,8 @@ namespace os
     }
     DiskManager& DiskManager::Instance(int block_size, int disk_size)
     {
-        static DiskManager dm(block_size, disk_size);
-        return dm;
+        static DiskManager dim(block_size, disk_size);
+        return dim;
     }
 
     // parameter: blocks to be occupied

@@ -21,8 +21,10 @@ namespace os
         const int block_size_;
         const int disk_size_;
         const int block_num_;
+
         QBitArray disk_bitmap_; //表示磁盘的位图
         QVector<DiskBlock> blocks_;
+
         static DiskManager& Instance(int block_size = BLOCK_SIZE, int disk_size = DISk_SIZE);
         int RequestDisk(inode_t file, int blocks_need);   //申请磁盘资源 ，返回占用的磁盘块的列表， 连续存储
         int ReleaseDisk(inode_t indode); // 释放磁盘资源
