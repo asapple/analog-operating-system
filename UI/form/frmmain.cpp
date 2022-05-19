@@ -107,6 +107,27 @@ void frmMain::initForm()
     setDeskTable();
     ui->btnMain->click();
 }
+
+void frmMain::mousePressEvent(QMouseEvent *event) {
+    mouse_is_press = true;
+    mouse_move_len = event->globalPos() - this->pos();
+}
+void frmMain::mouseMoveEvent(QMouseEvent *event)  {
+    //(event->buttons() && Qt::LeftButton)  //按下鼠标并且按下的是左键
+        //获取鼠标移动中，移动后窗口在整个屏幕的坐标，将移动之前窗口的位置 move到 这个坐标（移动后窗口的位置）
+        //通过事件event->globalPos()知道鼠标坐标，鼠标坐标减去鼠标相对于窗口位置，就是窗口在整个屏幕的坐标
+    if (  mouse_is_press && (event->buttons() && Qt::LeftButton) &&
+          (event->globalPos()-mouse_move_len).manhattanLength() > QApplication::startDragDistance()) //这句话其实就是：鼠标移动的距离大于最小可识别的距离
+    {
+        move(event->globalPos() - mouse_move_len);
+        mouse_move_len = event->globalPos() - pos();
+    }
+}
+void frmMain::mouseReleaseEvent(QMouseEvent *event) {
+    mouse_is_press = false;
+}
+
+
 // 初始化DeskTable
 void frmMain::setDeskTable(){
     //使用createItemsARow()
@@ -219,7 +240,7 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         if (os::FileManager::Instance().ChangeDirectory(cmd[1]) < 0) {
             ui->echo_textBrowser->append("Change Directory Error");
         }
-        ui->pwd_label->setText("PWD: "+os::FileManager::Instance().GetCWD());
+        ui->pwd_label->setText("CWD: "+os::FileManager::Instance().GetCWD());
     }else if (cmd[0]=="clear") {
         ui->echo_textBrowser->clear();
     }else if (cmd[0]=="rm") {
