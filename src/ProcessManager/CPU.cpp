@@ -123,7 +123,7 @@ int CPU::ExecuteInstruction(PCB& pcb)
         if (size < 0) {
             // TODO: 错误处理
         } else {
-            pcb.size_ += size;
+            pcb.size_ += pcb.ir_.op;
         }
         break;
         // 进程退出指令

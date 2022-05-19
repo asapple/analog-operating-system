@@ -1,5 +1,7 @@
 #include "include/DeviceManager/DeviceManager.h"
 #include "include/ProcessManager/Interupt.h"
+#include <QDebug>
+
 namespace os
 {
 
@@ -24,6 +26,9 @@ namespace os
         if (now_queue_.empty())
             state_ = BUSY;                 //队列为空则将状态设置为繁忙
         now_queue_.append(temp_pid_time_); //加入当前设备的队列末尾
+        for (auto i : now_queue_){
+            qDebug() << "Queue  pid = "<< i.pid_ <<", time = "  << i.time_ <<"; state = " << state_ << " dev_num = " << dev_num_;
+        }
     }
 
     int Device::RemoveQueue(pid_t pid)
@@ -32,6 +37,8 @@ namespace os
         {
             if (i->pid_ == pid) //查找到进程pid 则删除
             {
+                qDebug() << "process found";
+                qDebug() << "Queue  pid = "<< i->pid_ <<", time = "  << i->time_ <<"; state = " << state_ << " dev_num = " << dev_num_;
                 now_queue_.erase(i);
                 if (i == now_queue_.begin())
                     isInterupt_ = 1; //若删除的pid为当前设备正在执行进程，产生中断告诉CPU已经完成当前任务
@@ -57,6 +64,7 @@ namespace os
                 if (now_queue_.empty())
                     state_ = IDLE; //若执行完成后队列为空 改变设备状态；
             }
+                qDebug() << "Queue  pid = "<< now_queue_.begin()->pid_ <<", time = "  << now_queue_.begin()->time_ <<"; state = " << state_ << " dev_num = " << dev_num_ ;
         }
         return 0;
     }
@@ -71,8 +79,8 @@ namespace os
     }
     DeviceManager &DeviceManager::Instance()
     {
-        static DeviceManager dm;
-        return dm;
+        static DeviceManager dem;
+        return dem;
     }
 
     int DeviceManager::RequestDevice(pid_t pid, size_t time, dev_t dev_id)

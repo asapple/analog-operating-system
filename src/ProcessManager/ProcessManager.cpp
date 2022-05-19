@@ -155,6 +155,7 @@ int ProcessManager::CheckKilled()
             process_list_[*it].pid_ = *it;
             // TODO 对应设备删除队列
             DeviceManager::Instance().RemoveProcess(*it);
+            wait_queue_.removeOne(*it);
         }
     }
     return 0;
