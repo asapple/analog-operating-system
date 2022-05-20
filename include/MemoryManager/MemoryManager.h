@@ -142,7 +142,17 @@ namespace os {
          * @return 正确执行时，返回0
          * @return 错误码-1：该进程没有页表
          */
-        int PrintOccupying(pid_t pid, QVector<frame_t>& Occupying);
+        int GetOccupying(pid_t pid, QVector<frame_t>& Occupying);
+        /*
+         * @brief 通过QVector返回整个内存的物理帧的占用情况，为被占用的帧用0表示，已被占用的帧显示占用它的进程号
+         * @return 正确执行时，返回位图容器
+         */
+        QVector<pid_t> GetBitmap() { return bitmap; }
+        /*
+         * @brief 获取指定内存帧的内容
+         * @return 正确执行时，返回指定帧的内容
+         */
+        QByteArray GetMemContent(frame_t frame) { return memory.mid(frame*MEMORY_PAGE_SIZE, MEMORY_PAGE_SIZE); }
     };
 }
 #endif // MEMORYMANAGER_H

@@ -187,11 +187,24 @@ void MemoryManager::CopyBytes(QByteArray& dest, int dstart, QByteArray& sour, in
     }
 }
 
+int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
+{
+    content = QString("order001"
+                      "order002"
+                      "order003"
+                      "order004"
+                      "order005"
+                      "order006"
+                      "order007"
+                      "order008").toUtf8();
+    return 0;
+}
+
 int MemoryManager::ReadBytes(QString file_name, page_t page, offset_t offset, size_t size, QByteArray& content)
 {
     QByteArray source;
-    int error = FileManager::Instance().ReadFile(file_name, source);
-//    int error = ReadFile(file_name, source); // 读取文件
+//    int error = FileManager::Instance().ReadFile(file_name, source);
+    int error = ReadFile(file_name, source); // 读取文件
     if (error) return error; // 错误码不为0，上报错误
     int start = page * 8 + offset; // 计算相对与文件头的偏移量
     if (start >= source.size()) return 254; // 起始地址超出文件范围
@@ -315,12 +328,14 @@ int MemoryManager::AccessMemory(pid_t pid, size_t virt_addr)
     // error == 1时，数据不在内存中，且需要替换页，VisitData已经完成了替换工作，只需往返回的帧号中写入新数据即可，同上跳过
     if (visit_error == 2){ // 数据不在内存中，且需要分配一个新的物理帧
         QVector<frame_t> new_frame;
+        MemoryManager::Instance().InitMemory(pid, "more");
         if (GetFrame(1, new_frame)) { // GetFrame返回1，说明内存不足
-            size_t data_now = pt_iter->GetNow(DATA);
-            if (data_now > 0) { // 当前数据页不为0
+            size_t data_now = pt_iter->GetNow(DATA) - 1; // result为2，data_now已经提前加1
+            if (data_now > 0) { // 已拥有的数据页不为0
                 pt_iter->SetMax(data_now, DATA); // 将数据页上限设置为当前有效页数
                 AccessMemory(pid, virt_addr); // 重新执行本函数
             } else {
+                pt_iter->SetNow(data_now, DATA); // 将当前数据页数量还原
                 return -2; // 错误，内存不足
             }
         } else { // 内存充足，调页后加入页表
@@ -362,7 +377,7 @@ int MemoryManager::MoreMemory(pid_t pid, size_t size)
     auto pt_iter = pt_meta.find(pid);
     if (pt_iter == pt_meta.end()) return -1; // 错误，该进程没有页表
     int num = ceil(size/double(MEMORY_PAGE_SIZE)); // 计算所需内存页
-    pt_iter->SetMax(pt_iter->GetNow(DATA)+num, DATA); // 提高数据段页数量上限
+    pt_iter->SetMax(pt_iter->GetMax(DATA)+num, DATA); // 提高数据段页数量上限
 
     size_t code_now = pt_iter->GetNow(CODE), data_now = pt_iter->GetNow(DATA);
     size_t code_max = pt_iter->GetMax(CODE), data_max = pt_iter->GetMax(DATA);
@@ -385,7 +400,7 @@ int MemoryManager::ReleaseMemory(pid_t pid)
     return 0;
 }
 
-int MemoryManager::PrintOccupying(pid_t pid, QVector<frame_t>& Occupying)
+int MemoryManager::GetOccupying(pid_t pid, QVector<frame_t>& Occupying)
 {
     auto pt_iter = pt_meta.find(pid);
     if (pt_iter == pt_meta.end()) return -1; // 错误，该进程没有页表
