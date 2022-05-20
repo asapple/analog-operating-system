@@ -114,7 +114,7 @@ void PrintBitmap()
     for (int i = 0; i < bitmap.size(); ++i) {
         arg = QString("%1").arg(bitmap[i], 6, 10, QChar(' '));
         str = str + arg;
-        if ((i+1) % 9 == 0) {
+        if ((i+1) % 8 == 0) {
             qDebug() << str;
             str.clear();
         }
