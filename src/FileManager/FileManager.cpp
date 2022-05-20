@@ -122,7 +122,6 @@ int FileManager::ForkSave(const QString& real_path, inode_t cur)
             for (int i = 0; i < sz; i+=8) {
                 Instruction ins(ffcb.data_.mid(i, MEMORY_INSTR_SIZE).data());
                 QString str(ins);
-                qDebug() << str;
                 out << str;
             }
             qfile.close();
@@ -221,13 +220,18 @@ int FileManager::MakeDirectory(QString directory_name)
 
 /**
  * @brief list command output result
- * @param files 当前目录下文件类型的文件名
- * @param dirs 当前目录下目录类型的文件名
- * @return 0, 成功返回
+ * @param files 用于返回当前目录下文件类型的文件名
+ * @param dirs 用于返回当前目录下目录类型的文件名
+ * @return 0  成功返回
+ * @return -1 路径错误，访问失败
  */
-int FileManager::List(QVector<QString>& files, QVector<QString>& dirs )
+int FileManager::List(QVector<QString>& files, QVector<QString>& dirs, QString path)
 {
-    FCB cur = fm_fcb_[fm_inodes_[cwd_].fcb_];
+    inode_t inode = Str2Path(path);
+    if (inode < 0) {
+        return -1;
+    }
+    FCB cur = fm_fcb_[fm_inodes_[inode].fcb_];
     for (auto file: cur.files_) {
         files.push_back(file.name_);
     }

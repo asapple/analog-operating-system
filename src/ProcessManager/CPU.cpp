@@ -59,7 +59,7 @@ void CPU::run() {
             // 执行指令
             if (ExecuteInstruction(cpcb) < 0) {
                 //TODO: 错误处理
-                qDebug() << "[ " << cpcb.pid_ <<" ]: [ERROR] Illegal Instruction";
+                qDebug() << "[" << cpcb.pid_ <<"]: [ERROR] Illegal Instruction";
             }
         }
 

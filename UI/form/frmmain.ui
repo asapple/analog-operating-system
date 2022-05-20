@@ -143,7 +143,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>DeskTable</string>
+            <string>DiskTable</string>
            </property>
            <property name="icon">
             <iconset resource="../other/main.qrc">

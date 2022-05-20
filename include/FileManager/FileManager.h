@@ -80,7 +80,7 @@ namespace os
         QString GetFullPath(inode_t inode);
         QString GetCWD();
 
-        int List(QVector<QString>& files, QVector<QString>& dirs );                                              // ok
+        int List(QVector<QString>& files, QVector<QString>& dirs, QString  path = ".");                                              // ok
         int ChangeDirectory(QString path);          // ok
         int MakeFile(QString file_name);                      // ok
         int MakeDirectory(QString directory_name);            // ok
