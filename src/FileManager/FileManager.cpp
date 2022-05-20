@@ -54,7 +54,11 @@ inode_t FileManager::ForkCreate(const QString& real_path, inode_t pre)
 {
     QDir dir(real_path);
     if (!dir.exists()) {
-        return -1;
+        if (!dir.mkdir(dir.absolutePath())) {
+            return -1;
+        } else {
+            return ForkCreate(real_path, pre);
+        }
     }
 
     // 在模拟文件系统中创建对应的目录项
