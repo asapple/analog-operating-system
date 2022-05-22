@@ -2,7 +2,7 @@
 #define FRMMAIN_H
 
 #include <QDialog>
-
+#include<QStringListModel>
 namespace Ui {
 inline QString TEXT_COLOR_GREEN(QString str) {
     return  "<font color=green>" +str +"</font>" + "<font color=black></font>";
@@ -28,6 +28,7 @@ protected:
 
 private:
     Ui::frmMain *ui;
+    QStringListModel *m_model;
     void setDeskTable();
     void createItemsARow(int rowNo, int addr,int size,int used,int free);
 private slots:

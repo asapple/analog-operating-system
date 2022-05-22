@@ -104,6 +104,7 @@ void frmMain::initForm()
         headerItem->setFont(font);//设置字体
         ui->tableWidget->setHorizontalHeaderItem(i,headerItem); //设置表头单元格的Item
     }
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     setDeskTable();
     ui->btnMain->click();
 }
@@ -170,14 +171,17 @@ void frmMain::buttonClick()
         ui->stackedWidget->setCurrentIndex(0);
     } else if (name == "Memory") {
         ui->stackedWidget->setCurrentIndex(1);
-    } else if (name == "Process") {
+    } else if (name == "MemTable") {
         ui->stackedWidget->setCurrentIndex(2);
-    } else if (name == "DeskTable") {
+    } else if (name == "Process") {
         ui->stackedWidget->setCurrentIndex(3);
-    }else if (name == "Desk") {
+    }
+    else if (name == "DeskTable") {
         ui->stackedWidget->setCurrentIndex(4);
-    } else if (name == "Device") {
+    }else if (name == "Desk") {
         ui->stackedWidget->setCurrentIndex(5);
+    } else if (name == "Device") {
+        ui->stackedWidget->setCurrentIndex(6);
     }
 }
 
