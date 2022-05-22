@@ -406,7 +406,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="menTable_page">
+     <widget class="QWidget" name="memTable_page">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QTableWidget" name="men_tableWidget"/>

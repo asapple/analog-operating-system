@@ -30,6 +30,7 @@ private:
     Ui::frmMain *ui;
     QStringListModel *m_model;
     void setDeskTable();
+    void setMemTable();
     void createItemsARow(int rowNo, int addr,int size,int used,int free);
 private slots:
     void initForm();

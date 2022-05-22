@@ -106,9 +106,37 @@ void frmMain::initForm()
     }
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     setDeskTable();
+
+    QStringList sl;
+    sl<<"地址"<<"内容";
+    ui->men_tableWidget->setColumnCount(8);
+//    for (int i=0;i<ui->men_tableWidget->columnCount();i++)//列编号从0开始
+//    {
+//        //cellItem=ui->tableInfo->horizontalHeaderItem(i);
+//        headerItem=new QTableWidgetItem(sl.at(i)); //新建一个QTableWidgetItem， headerText.at(i)获取headerText的i行字符串
+//        QFont font=headerItem->font();//获取原有字体设置
+//        font.setBold(true);//设置为粗体
+//        font.setPointSize(12);//字体大小
+//        headerItem->setForeground(Qt::blue);//字体颜色
+
+//        headerItem->setFont(font);//设置字体
+//        ui->men_tableWidget->setHorizontalHeaderItem(i,headerItem); //设置表头单元格的Item
+//    }
+    ui->men_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    setMemTable();
     ui->btnMain->click();
 }
-
+void frmMain::setMemTable(){
+    for(int i=0;i<10;i++){
+        ui->men_tableWidget->insertRow(i);
+        for(int j=0;j<8;j++){
+            QTableWidgetItem    *item;
+            item=new  QTableWidgetItem(QString("%1:%2").arg((i*8+j)*8).arg(0));
+            item->setBackground(Qt::green);// 用不同的颜色表示该内存是否被分配
+            ui->men_tableWidget->setItem(i,j,item);
+        }
+    }
+}
 void frmMain::mousePressEvent(QMouseEvent *event) {
     mouse_is_press = true;
     mouse_move_len = event->globalPos() - this->pos();
