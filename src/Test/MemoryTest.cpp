@@ -110,7 +110,7 @@ void PrintBitmap()
 {
     QVector<frame_t> bitmap = MemoryManager::Instance().GetBitmap();
     QString str, arg;
-    qDebug() << "内存情况：";
+    qDebug() << QString("内存情况：");
     for (int i = 0; i < bitmap.size(); ++i) {
         arg = QString("%1").arg(bitmap[i], 6, 10, QChar(' '));
         str = str + arg;

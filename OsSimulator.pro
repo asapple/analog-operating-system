@@ -16,12 +16,12 @@ SOURCES += \
     src/ProcessManager/ProcessManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
     src/FileManager/FileManager.cpp \
-    src/Test/MemoryTest.cpp \
+#    src/Test/MemoryTest.cpp \
     #src/Test/ProcessTest.cpp \
     #src/Test/ProcessMemoryTest.cpp \
 #    src/Test/DeviceTest.cpp \
 #    src/Test/DiskTest.cpp \
-#    src/Test/IntegretedTest.cpp \
+    src/Test/IntegretedTest.cpp \
 #    src/main.cpp
 
 HEADERS += \

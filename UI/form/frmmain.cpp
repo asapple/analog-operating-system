@@ -110,18 +110,18 @@ void frmMain::initForm()
     QStringList sl;
     sl<<"地址"<<"内容";
     ui->men_tableWidget->setColumnCount(8);
-//    for (int i=0;i<ui->men_tableWidget->columnCount();i++)//列编号从0开始
-//    {
-//        //cellItem=ui->tableInfo->horizontalHeaderItem(i);
-//        headerItem=new QTableWidgetItem(sl.at(i)); //新建一个QTableWidgetItem， headerText.at(i)获取headerText的i行字符串
-//        QFont font=headerItem->font();//获取原有字体设置
-//        font.setBold(true);//设置为粗体
-//        font.setPointSize(12);//字体大小
-//        headerItem->setForeground(Qt::blue);//字体颜色
+    //    for (int i=0;i<ui->men_tableWidget->columnCount();i++)//列编号从0开始
+    //    {
+    //        //cellItem=ui->tableInfo->horizontalHeaderItem(i);
+    //        headerItem=new QTableWidgetItem(sl.at(i)); //新建一个QTableWidgetItem， headerText.at(i)获取headerText的i行字符串
+    //        QFont font=headerItem->font();//获取原有字体设置
+    //        font.setBold(true);//设置为粗体
+    //        font.setPointSize(12);//字体大小
+    //        headerItem->setForeground(Qt::blue);//字体颜色
 
-//        headerItem->setFont(font);//设置字体
-//        ui->men_tableWidget->setHorizontalHeaderItem(i,headerItem); //设置表头单元格的Item
-//    }
+    //        headerItem->setFont(font);//设置字体
+    //        ui->men_tableWidget->setHorizontalHeaderItem(i,headerItem); //设置表头单元格的Item
+    //    }
     ui->men_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     setMemTable();
     ui->btnMain->click();
@@ -143,8 +143,8 @@ void frmMain::mousePressEvent(QMouseEvent *event) {
 }
 void frmMain::mouseMoveEvent(QMouseEvent *event)  {
     //(event->buttons() && Qt::LeftButton)  //按下鼠标并且按下的是左键
-        //获取鼠标移动中，移动后窗口在整个屏幕的坐标，将移动之前窗口的位置 move到 这个坐标（移动后窗口的位置）
-        //通过事件event->globalPos()知道鼠标坐标，鼠标坐标减去鼠标相对于窗口位置，就是窗口在整个屏幕的坐标
+    //获取鼠标移动中，移动后窗口在整个屏幕的坐标，将移动之前窗口的位置 move到 这个坐标（移动后窗口的位置）
+    //通过事件event->globalPos()知道鼠标坐标，鼠标坐标减去鼠标相对于窗口位置，就是窗口在整个屏幕的坐标
     if (  mouse_is_press && (event->buttons() && Qt::LeftButton) &&
           (event->globalPos()-mouse_move_len).manhattanLength() > QApplication::startDragDistance()) //这句话其实就是：鼠标移动的距离大于最小可识别的距离
     {
@@ -253,12 +253,20 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         return;
     else if (cmd[0]=="ls") {
         // 调用文件系统的FileManager::List()方法
+        bool isDetail = (cmd.indexOf("-a") != -1);
+        QString path;
+        for (int i = 1; i < cmd.size(); i++) {
+            if (!cmd[i].startsWith('-')) {
+                path = cmd[i];
+                break;
+            }
+        }
         QVector<QString> files, dirs;
         int ret;
-        if (cmd.size() == 1) {
+        if (path == "") {
             ret = FileManager::Instance().List(files, dirs);
         } else {
-            ret = FileManager::Instance().List(files, dirs,cmd[1]);
+            ret = FileManager::Instance().List(files, dirs,path);
         }
         if (ret < 0) {
             ui->echo_textBrowser->append("path error");
@@ -268,6 +276,9 @@ void frmMain::on_cmd_lineEdit_returnPressed()
             str += TEXT_COLOR_GREEN(*file) + "  ";
         }
         for (auto dir = dirs.begin(); dir != dirs.end(); dir++) {
+            if (dir->indexOf('.') != -1 && !isDetail) {
+                continue;
+            }
             str += TEXT_COLOR_BLUE(*dir+"/") + "  ";
         }
         ui->echo_textBrowser->append(str);
@@ -287,19 +298,19 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         }
         ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="rmdir") {
-            // 调用文件系统的FileManager::RemoveMyDirectory()方法
-            QString str="remove directory suscess";
-            if (os::FileManager::Instance().RemoveMyDirectory(cmd[1]) < 0) {
-                str = ("remove directory error");
-            }
-            ui->echo_textBrowser->append(str);
+        // 调用文件系统的FileManager::RemoveMyDirectory()方法
+        QString str="remove directory suscess";
+        if (os::FileManager::Instance().RemoveMyDirectory(cmd[1]) < 0) {
+            str = ("remove directory error");
+        }
+        ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="mkdir") {
-    // 调用文件系统的FileManager::MakeDirectory()方法
-    QString str="create directory success";
-    if (os::FileManager::Instance().MakeDirectory(cmd[1]) < 0) {
-        str = "create directory error.";
-    }
-    ui->echo_textBrowser->append(str);
+        // 调用文件系统的FileManager::MakeDirectory()方法
+        QString str="create directory success";
+        if (os::FileManager::Instance().MakeDirectory(cmd[1]) < 0) {
+            str = "create directory error.";
+        }
+        ui->echo_textBrowser->append(str);
     }else if (cmd[0]=="mkfile") {
         // 调用文件系统的FileManager::MakeFile()方法
         QString str="create file success";
@@ -310,7 +321,7 @@ void frmMain::on_cmd_lineEdit_returnPressed()
     }else if (cmd[0]=="exec") {
         // 调用文件系统的FileManager::Execute()方法
         if (os::ProcessManager::Instance().Execute(cmd[1]) < 0) {
-             ui->echo_textBrowser->append("create error!");
+            ui->echo_textBrowser->append("create error!");
         }
     }else if (cmd[0]=="kill") {
         // 调用文件系统的FileManager::Kill()方法
@@ -336,7 +347,9 @@ void frmMain::on_cmd_lineEdit_returnPressed()
             str.append(QString(format).arg(QString::number(pcb.pid_), QString::number(pcb.ppid_), "Wait", QString::number((int)pcb.size_), QString::number(pcb.priority_), QString::number(pcb.run_time_), pcb.file_name_));
         }
         ui->echo_textBrowser->append(str);
-    } else{
+    } else if (cmd[0] == "quit") {
+        this->on_btnMenu_Close_clicked();
+    } else {
         ui->echo_textBrowser->append(QString("command not definded;"));
     }
     return;
