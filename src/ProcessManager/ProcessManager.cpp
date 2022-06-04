@@ -238,7 +238,7 @@ int FCFSScheduler::RemoveProcess(pid_t pid)
     if (!hash_table_.contains(pid)) {
         return -1;
     }
-    ready_queue_.erase(hash_table_.find(pid).value());
+    ready_queue_.erase(hash_table_[pid]);
     return 0;
 }
 /**

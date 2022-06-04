@@ -8,8 +8,8 @@
 #include "include/DeviceManager/DeviceManager.h"
 
 namespace os {
-CPU::CPU(int time_slot)
-    : time_slot_(time_slot), cur_tick_(0), current_run_(0)
+CPU::CPU(int time_slot, frmMain* ui)
+    : time_slot_(time_slot), cur_tick_(0), current_run_(0), ui_(ui)
 {}
 /**
  * @brief CPU::run
@@ -73,6 +73,9 @@ void CPU::run() {
         pm.CheckKilled();
         // 中断处理
         InteruptManager::Instance().InteruptDetect();
+
+        // 更新UI
+        ui_->updateProcView();
     }
 }
 

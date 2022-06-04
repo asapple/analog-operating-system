@@ -6,8 +6,11 @@
 #include "include/FileManager/FileManager.h"
 #include "include/ProcessManager/ProcessManager.h"
 
+#include <QMetaType>
+
 frmMain::frmMain(QWidget *parent) : QDialog(parent), ui(new Ui::frmMain)
 {
+    qRegisterMetaType<QVector<int>>("QVector<int>");
     ui->setupUi(this);
     this->initForm();
 

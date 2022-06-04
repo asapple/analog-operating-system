@@ -5,6 +5,7 @@
 
 #include "include/Common/Common.h"
 #include "include/ProcessManager/Process.h"
+#include "UI/form/frmmain.h"
 
 namespace os {
     /**
@@ -20,8 +21,10 @@ namespace os {
         tick_t cur_tick_;
         pid_t current_run_;
         int ExecuteInstruction(PCB& pcb);
+
+        frmMain* ui_;
     public:
-        CPU(int time_slot);
+        CPU(int time_slot, frmMain* ui);
         ~CPU();
         void run() override;
     };

@@ -203,8 +203,8 @@ int MemoryManager::ReadFile(const QString& file_name, QByteArray& content)
 int MemoryManager::ReadBytes(QString file_name, page_t page, offset_t offset, size_t size, QByteArray& content)
 {
     QByteArray source;
-//    int error = FileManager::Instance().ReadFile(file_name, source);
-    int error = ReadFile(file_name, source); // 读取文件
+    int error = FileManager::Instance().ReadFile(file_name, source);
+//    int error = ReadFile(file_name, source); // 读取文件
     if (error) return error; // 错误码不为0，上报错误
     int start = page * 8 + offset; // 计算相对与文件头的偏移量
     if (start >= source.size()) return 254; // 起始地址超出文件范围

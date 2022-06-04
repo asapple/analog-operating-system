@@ -57,11 +57,11 @@ struct Instruction {
     }
     inline operator QString() {
         if (type == InsType::DEVICE) {
-            return QString("%1 %2 %3\n").arg(QString((char)type), QString::number(op1), QString::number(op2));
+            return QString("%1 %2 %3").arg(QString((char)type), QString::number(op1), QString::number(op2));
         } else if (type == InsType::QUIT || type == InsType::FORK) {
-            return QString((char)type)+"\n";
+            return QString((char)type);
         } else {
-            return QString("%1 %2\n").arg(QString((char)type), QString::number(op));
+            return QString("%1 %2").arg(QString((char)type), QString::number(op));
         }
     }
 };

@@ -126,7 +126,7 @@ int FileManager::ForkSave(const QString& real_path, inode_t cur)
             for (int i = 0; i < sz; i+=8) {
                 Instruction ins(ffcb.data_.mid(i, MEMORY_INSTR_SIZE).data());
                 QString str(ins);
-                out << str;
+                out << str << endl;
             }
             qfile.close();
         } else {

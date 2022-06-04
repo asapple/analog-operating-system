@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
     QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
 #endif
     Init();
-    os::CPU cpu(1000);
-    cpu.start();
     QApplication a(argc, argv);
     frmMain w;
+    os::CPU cpu(1500,&w);
+    cpu.start();
     w.show();
     return a.exec();
 }

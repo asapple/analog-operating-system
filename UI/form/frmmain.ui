@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1010</width>
     <height>600</height>
    </rect>
   </property>
@@ -415,46 +415,233 @@
      </widget>
      <widget class="QWidget" name="proc_page">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="3" column="0">
+       <item row="1" column="2">
+        <layout class="QHBoxLayout" name="execTime">
+         <item>
+          <widget class="QLabel" name="execTime_label">
+           <property name="text">
+            <string>执行时间：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="execTime_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="1">
+        <layout class="QHBoxLayout" name="startTIME">
+         <item>
+          <widget class="QLabel" name="startTime_label">
+           <property name="text">
+            <string>开始时间：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="startTime_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0">
         <widget class="QLabel" name="block_label">
          <property name="text">
           <string>阻塞</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="3">
-        <widget class="QTextBrowser" name="ready_textBrowser"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="PID_label">
-         <property name="text">
-          <string>当前PID：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="execTime_label">
-         <property name="text">
-          <string>执行时间：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="ready_label">
          <property name="text">
           <string>就绪</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="IR_label">
-         <property name="text">
-          <string>指令寄存器：</string>
-         </property>
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="PPID">
+         <item>
+          <widget class="QLabel" name="PPID_label">
+           <property name="text">
+            <string>当前父进程号：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="PPID_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <layout class="QHBoxLayout" name="PID">
+         <item>
+          <widget class="QLabel" name="PID_label">
+           <property name="text">
+            <string>当前进程号：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="PID_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="0" colspan="3">
+        <widget class="QTableWidget" name="ready_table">
+         <column>
+          <property name="text">
+           <string>进程号</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>父进程号</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>文件名</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>指令</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>开始时间</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>执行时间</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>优先级</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>大小</string>
+          </property>
+         </column>
         </widget>
        </item>
-       <item row="4" column="0" colspan="3">
-        <widget class="QTextBrowser" name="block_textBrowser"/>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="curTime">
+         <item>
+          <widget class="QLabel" name="curTime_label">
+           <property name="text">
+            <string>当前时间：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="curTime_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="7" column="0" colspan="3">
+        <widget class="QTableWidget" name="block_table">
+         <column>
+          <property name="text">
+           <string>进程号</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>父进程号</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>文件名</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>指令</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>开始时间</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>执行时间</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>优先级</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>大小</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <layout class="QHBoxLayout" name="IR">
+         <item>
+          <widget class="QLabel" name="IR_label">
+           <property name="text">
+            <string>指令寄存器：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="IR_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="2">
+        <layout class="QHBoxLayout" name="Pri">
+         <item>
+          <widget class="QLabel" name="Pri_label">
+           <property name="text">
+            <string>优先级：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="Pri_value">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

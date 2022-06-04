@@ -21,6 +21,7 @@ class frmMain : public QDialog
 
 public:
     explicit frmMain(QWidget *parent = 0);
+    void updateProcView();
     ~frmMain();
 
 protected:
@@ -32,6 +33,7 @@ private:
     void setDeskTable();
     void setMemTable();
     void createItemsARow(int rowNo, int addr,int size,int used,int free);
+
 private slots:
     void initForm();
     void buttonClick();
@@ -41,7 +43,6 @@ private slots:
     void on_btnMenu_Max_clicked();
     void on_btnMenu_Close_clicked();
     void on_cmd_lineEdit_returnPressed();
-
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);    //鼠标点击事件
