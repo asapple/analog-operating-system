@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QVector>
 #include <QByteArray>
+#include <QTextCodec>
 #include <math.h>
 #include "include/Common/Common.h"
 namespace os {
@@ -79,7 +80,8 @@ namespace os {
         MemoryManager();
     public:
         static MemoryManager& Instance();
-        /*
+
+        /**
          * @brief 初始化进程的内存空间
          * @param pid 进程的pid号
          * @param file_name 进程的可执行文件名
@@ -90,7 +92,8 @@ namespace os {
          * @return 错误码-5，文件系统读取出错
          */
         int InitMemory(pid_t pid, const QString& file_name);
-        /*
+
+        /**
          * @brief 取出指定位置的一条指令
          * @param pid 进程的pid号
          * @param virt_addr 所需指令的虚拟地址
@@ -102,7 +105,8 @@ namespace os {
          * @return 错误码-5，文件系统读取出错
          */
         int GetCode(pid_t pid, size_t virt_addr, QByteArray& content);
-        /*
+
+        /**
          * @brief 读取指定位置的一页数据
          * @param pid 进程的pid号
          * @param virt_addr 数据所在页的虚拟地址
@@ -111,7 +115,8 @@ namespace os {
          * @return 错误码-2，内存不足
          */
         int AccessMemory(pid_t pid, size_t virt_addr); //ps. content 默认缺省，无实际含义
-        /*
+
+        /**
          * @brief 使用一个进程的内存空间初始化另一个进程
          * @param pid 被初始话的进程的pid号
          * @param ppid 已存在的进程的pid号
@@ -120,7 +125,8 @@ namespace os {
          * @return 错误码-2，内存不足
          */
         int ForkMemory(pid_t pid, pid_t ppid); // 拷贝一个进程的内存作为另一进程的初始内存
-        /*
+
+        /**
          * @brief 提高一个进程所能使用的内存空间上限
          * @param pid 进程的pid号
          * @param size 进程想要增加的空间大小，单位为字节
@@ -128,14 +134,16 @@ namespace os {
          * @return 错误码-1：该进程没有页表
          */
         int MoreMemory(pid_t pid, size_t size);
-        /*
+
+        /**
          * @brief 回收释放一个进程的全部内存空间
          * @param pid 进程的pid号
          * @return 正确执行时，返回0
          * @return 错误码-1：该进程没有页表
          */
         int ReleaseMemory(pid_t pid);
-        /*
+
+        /**
          * @brief 通过QVector返回一个进程所占有的物理帧的帧号
          * @param pid 进程的pid号
          * @param Occupying 接收进程所占物理帧号的容器
@@ -143,12 +151,14 @@ namespace os {
          * @return 错误码-1：该进程没有页表
          */
         int GetOccupying(pid_t pid, QVector<frame_t>& Occupying);
-        /*
-         * @brief 通过QVector返回整个内存的物理帧的占用情况，为被占用的帧用0表示，已被占用的帧显示占用它的进程号
+
+        /**
+         * @brief 通过QVector返回整个内存的物理帧的占用情况，为被占用的帧用-1表示，已被占用的帧显示占用它的进程号
          * @return 正确执行时，返回位图容器
          */
         QVector<pid_t> GetBitmap() { return bitmap; }
-        /*
+
+        /**
          * @brief 获取指定内存帧的内容
          * @return 正确执行时，返回指定帧的内容
          */

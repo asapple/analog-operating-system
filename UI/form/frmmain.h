@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include<QStringListModel>
+
 namespace Ui {
 inline QString TEXT_COLOR_GREEN(QString str) {
     return  "<font color=green>" +str +"</font>" + "<font color=black></font>";
@@ -22,6 +23,10 @@ class frmMain : public QDialog
 public:
     explicit frmMain(QWidget *parent = 0);
     void updateProcView();
+    /**
+     * @brief 更新内存位图视图
+     */
+    void updateMemTableView();
     ~frmMain();
 
 protected:

@@ -76,6 +76,7 @@ void CPU::run() {
 
         // 更新UI
         ui_->updateProcView();
+        ui_->updateMemTableView();
     }
 }
 

@@ -130,12 +130,12 @@ void frmMain::initForm()
     ui->btnMain->click();
 }
 void frmMain::setMemTable(){
-    for(int i=0;i<10;i++){
+    for(int i=0;i<8;i++){
         ui->men_tableWidget->insertRow(i);
         for(int j=0;j<8;j++){
             QTableWidgetItem    *item;
-            item=new  QTableWidgetItem(QString("%1:%2").arg((i*8+j)*8).arg(0));
-            item->setBackground(Qt::green);// 用不同的颜色表示该内存是否被分配
+            item=new  QTableWidgetItem(QString("pid:%1  %2").arg(0).arg(0));
+            item->setBackground(Qt::gray);// 用不同的颜色表示该内存是否被分配
             ui->men_tableWidget->setItem(i,j,item);
         }
     }

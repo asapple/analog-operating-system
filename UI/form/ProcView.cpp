@@ -23,7 +23,8 @@ static void updateProcessList(QTableWidget* table, int rowno, PCB& pcb);
  * @brief frmMain::updateProcView
  * 获取当前的进程状态数据，并用最新数据进程界面视图
  */
-void frmMain::updateProcView() {
+void frmMain::updateProcView()
+{
     auto& pm = ProcessManager::Instance();
     pid_t run = pm.GetRunProcess();
     auto waitList = pm.GetWaitQueue();

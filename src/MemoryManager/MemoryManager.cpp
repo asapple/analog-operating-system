@@ -141,8 +141,8 @@ QVector<frame_t> PageTable::PrintOccupying()
 MemoryManager::MemoryManager() :
     CODE(true), DATA(false),
     memory(MEMORY_TOTAL_SIZE, '0'),
-    bitmap(MEMORY_TOTAL_SIZE/MEMORY_PAGE_SIZE,-1)
-     {}
+    bitmap(MEMORY_TOTAL_SIZE/MEMORY_PAGE_SIZE, 0)
+{}
 
 MemoryManager& MemoryManager::Instance()
 {
@@ -170,7 +170,7 @@ bool MemoryManager::GetFrame(size_t size, QVector<frame_t>& frames)
 {
     size_t found = 0;
     for (int i = 0; i < bitmap.size(); i++) { // 遍历位图
-        if (bitmap[i] == -1) { // 发现未被占用的物理帧
+        if (bitmap[i] == 0) { // 发现未被占用的物理帧
             frames.append(i);
             found++;
             if (found == size) break;
@@ -211,7 +211,7 @@ int MemoryManager::ReadBytes(QString file_name, page_t page, offset_t offset, si
     content = source.mid(start, size); // 复制
     if (start + size > source.size())
         return 255; // 复制不完全
-    else
+    else  // 复制完全成功
         return 0;
 }
 
@@ -325,8 +325,10 @@ int MemoryManager::AccessMemory(pid_t pid, size_t virt_addr)
     PrintInfo(str);
 
     // error == 0时，数据在内存中，直接读取，由于没有实际数据，故跳过
-    // error == 1时，数据不在内存中，且需要替换页，VisitData已经完成了替换工作，只需往返回的帧号中写入新数据即可，同上跳过
-    if (visit_error == 2){ // 数据不在内存中，且需要分配一个新的物理帧
+    if (visit_error == 1) { // error == 1时，数据不在内存中，且需要替换页，VisitData已经完成了替换工作，只需往返回的帧号中写入新数据即可
+        QByteArray data = QString("data%1").arg(virt_addr, 4, 10, QLatin1Char('0')).toUtf8(); // 取得数据，由于没有数据，所以使用象征替代
+        CopyBytes(memory, frame*MEMORY_PAGE_SIZE, data, 0, MEMORY_PAGE_SIZE); // 覆盖牺牲帧
+    } else if (visit_error == 2) { // 数据不在内存中，且需要分配一个新的物理帧
         QVector<frame_t> new_frame;
         MemoryManager::Instance().InitMemory(pid, "more");
         if (GetFrame(1, new_frame)) { // GetFrame返回1，说明内存不足
@@ -340,6 +342,8 @@ int MemoryManager::AccessMemory(pid_t pid, size_t virt_addr)
             }
         } else { // 内存充足，调页后加入页表
             bitmap[new_frame[0]] = pid; // 更改位图，标识占用
+            QByteArray data = QString("data%1").arg(virt_addr, 4, 10, QLatin1Char('0')).toUtf8(); // 取得数据，由于没有数据，所以使用象征替代
+            CopyBytes(memory, new_frame[0]*MEMORY_PAGE_SIZE, data, 0, MEMORY_PAGE_SIZE); // 写入新帧
             pt_iter->AddPage(page, new_frame[0]); // 将新帧加入页表
         }
     }
@@ -394,7 +398,7 @@ int MemoryManager::ReleaseMemory(pid_t pid)
     QHash<page_t, PtItem> table = pt_iter->GetTable();
     for (auto i = table.begin(); i != table.end(); i++) { // 遍历页表内容
         if (i->GetVi()) // 解除对有效页的占用
-            bitmap[i->GetFrame()] = -1;
+            bitmap[i->GetFrame()] = 0;
     }
     pt_meta.erase(pt_iter); // 删除映射
     return 0;
