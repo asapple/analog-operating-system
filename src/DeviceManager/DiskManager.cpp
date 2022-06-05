@@ -21,8 +21,7 @@ namespace os
         return dim;
     }
 
-    // parameter: blocks to be occupied
-    // return: occupied blocks id
+
     int DiskManager::RequestDisk(inode_t file, int blocks_need)
     {
         bool is_found = false;
@@ -53,15 +52,8 @@ namespace os
         return -1;
     }
 
-    // parameter: reverse procedure from RequestDisk()
     int DiskManager::ReleaseDisk(inode_t inode)
     {
-//        for (auto i : blocks_vector)
-//        {
-//            disk_bitmap_.toggleBit(i);
-//            if (disk_bitmap_.testBit(i))
-//                return -1; //表示磁盘中存在数据从0变成1，释放资源异常,返回-1;
-//        }
         for (int i = 0; i < block_num_;i++) {
             if (disk_bitmap_.testBit(i)) {
                 if (blocks_[i].owner_ == inode) {
@@ -70,16 +62,16 @@ namespace os
                 }
             }
         }
-        return 0; //释放正常返回0；
+        return 0;
     }
 
     QVector<int> DiskManager::GetDisk()
     {
-        QVector<int> return_occupied = QVector<int>(); //定义需 返回磁盘已经被占用的容器
+        QVector<int> return_occupied = QVector<int>(); //定义需返回磁盘已经被占用的容器
         for (int i = 0; i < block_num_; i++)
         {
             if (disk_bitmap_.testBit(i))
-            {                              //该方法表示 i处 若为1返回true，否则返回 false
+            {                              //该方法表示 磁盘号为i处 若为1返回true，否则返回 false
                 return_occupied.append(i); //占用位置则加入需要返回 块容器
             }
         }
