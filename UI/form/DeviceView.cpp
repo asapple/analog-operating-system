@@ -34,15 +34,15 @@ void frmMain::updateDeviceView(){
             device_queue[i]+=QString::number(device_[i].now_queue_[j].pid_)+"             "+ QString::number(device_[i].now_queue_[j].time_)+"\n";
         }
     }
-    ui->textBrowser1->append("为什么行");
+//    ui->textBrowser1->append("为什么行");
 
     //下面全给注释了能跑，但是我输出不了队列信息
     //为什么不行
-    ui->textBrowser1->clear();
+//    ui->textBrowser1->clear();
 
     //下面代码为什么不行QAQ
-    ui->textBrowser1->setText("为什么不行");
+//    ui->textBrowser1->setText("为什么不行");
     ui->textBrowser1->setText(device_queue[0]);
-    ui->textBrowser1->setText(device_queue[1]);
-    ui->textBrowser1->setText(device_queue[2]);
+    ui->textBrowser2->setText(device_queue[1]);
+    ui->textBrowser3->setText(device_queue[2]);
 }

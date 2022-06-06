@@ -215,6 +215,7 @@ void frmMain::buttonClick()
         ui->stackedWidget->setCurrentIndex(5);
     } else if (name == "Device") {
         ui->stackedWidget->setCurrentIndex(6);
+        updateDeviceView();
     }
 }
 
