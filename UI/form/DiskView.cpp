@@ -12,7 +12,6 @@ void frmMain::updateDiskView(){
     auto& dim = DiskManager::Instance();
     QVector<int> busy_vector = dim.GetDisk();
     QVector<QString> filename_vector;
-    static QTableWidgetItem* item;
 
     for(int i = 0; i < busy_vector.length(); i++)
     {

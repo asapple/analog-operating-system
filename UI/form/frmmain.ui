@@ -663,9 +663,6 @@
      </widget>
      <widget class="QWidget" name="device_page">
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="2" column="0">
-        <widget class="QTextBrowser" name="textBrowser1"/>
-       </item>
        <item row="0" column="2">
         <widget class="QLabel" name="idlabel3">
          <property name="text">
@@ -680,18 +677,12 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QTextBrowser" name="textBrowser3"/>
-       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="idlabel2">
          <property name="text">
           <string>设备号：</string>
          </property>
         </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QTextBrowser" name="textBrowser2"/>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="statelabel1">
@@ -713,6 +704,15 @@
           <string>设备状态</string>
          </property>
         </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QTextBrowser" name="textBrowser1"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QTextBrowser" name="textBrowser2"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QTextBrowser" name="textBrowser3"/>
        </item>
       </layout>
      </widget>

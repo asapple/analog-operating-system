@@ -56,7 +56,7 @@ namespace os
             {                    //当前任务执行完成
                 isInterupt_ = 1; //中断标志位置1
                 /*
-                 * 上报CPU处理,不会写了
+                 * 上报CPU处理
                  */
                 InteruptManager::Instance().InteruptRequest(Interupt(dev_num_, now_queue_.begin()->pid_, priority_));
 
@@ -73,7 +73,7 @@ namespace os
     {
         for (int i = 0; i < DEVICE_SIZE; i++)
         { //创建系统中设备
-            Device temp_device_(i);
+            Device temp_device_ = Device(i);
             device_.insert(i, temp_device_);
         }
     }
