@@ -163,7 +163,9 @@ void frmMain::mouseReleaseEvent(QMouseEvent *event) {
 // 初始化DeskTable
 void frmMain::setDeskTable(){
     //使用createItemsARow()
-    ui->tableWidget->insertRow(0);//添加第0行
+    for(int i=0;i<32;i++){
+        ui->tableWidget->insertRow(i);//添加第0行
+    }
     createItemsARow(0,0,64,64,0);//往第0行里写入数据
     // 写个for循环一行一行的加入
 }
