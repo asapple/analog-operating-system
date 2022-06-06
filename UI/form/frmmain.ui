@@ -340,7 +340,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="shell_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -663,15 +663,56 @@
      </widget>
      <widget class="QWidget" name="device_page">
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <widget class="QLabel" name="device__label">
+       <item row="2" column="0">
+        <widget class="QTextBrowser" name="textBrowser1"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="idlabel3">
          <property name="text">
-          <string>I/O</string>
+          <string>设备号：</string>
          </property>
         </widget>
        </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="idlabel1">
+         <property name="text">
+          <string>设备号：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QTextBrowser" name="textBrowser3"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="idlabel2">
+         <property name="text">
+          <string>设备号：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QTextBrowser" name="textBrowser2"/>
+       </item>
        <item row="1" column="0">
-        <widget class="QTextBrowser" name="device_textBrowser"/>
+        <widget class="QLabel" name="statelabel1">
+         <property name="text">
+          <string>设备状态</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="statelabel2">
+         <property name="text">
+          <string>设备状态</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="statelabel3">
+         <property name="text">
+          <string>设备状态</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
