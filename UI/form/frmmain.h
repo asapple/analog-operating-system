@@ -56,7 +56,8 @@ private slots:
     void on_btnMenu_Max_clicked();
     void on_btnMenu_Close_clicked();
     void on_cmd_lineEdit_returnPressed();
-
+public slots:
+    void updateView();
 protected:
     virtual void mousePressEvent(QMouseEvent *event);    //鼠标点击事件
     virtual void mouseMoveEvent(QMouseEvent *event);     //鼠标移动事件

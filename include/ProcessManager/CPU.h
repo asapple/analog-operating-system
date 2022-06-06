@@ -27,6 +27,9 @@ namespace os {
         CPU(int time_slot, frmMain* ui);
         ~CPU();
         void run() override;
+
+    signals:
+        void refresh();
     };
 }
 #endif // CPU_H

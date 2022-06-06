@@ -13,6 +13,11 @@ frmMain::frmMain(QWidget *parent) : QDialog(parent), ui(new Ui::frmMain)
     qRegisterMetaType<QVector<int>>("QVector<int>");
     ui->setupUi(this);
     this->initForm();
+    ui->block_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->ready_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->device0table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->device1table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->device2table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 }
 
@@ -159,6 +164,13 @@ void frmMain::mouseReleaseEvent(QMouseEvent *event) {
     mouse_is_press = false;
 }
 
+void frmMain::updateView() {
+    updateProcView();
+    updateMemTableView();
+    updateDiskView();
+    updateDeviceView();
+}
+
 
 // 初始化DeskTable
 void frmMain::setDeskTable(){
@@ -209,13 +221,12 @@ void frmMain::buttonClick()
     } else if (name == "Process") {
         ui->stackedWidget->setCurrentIndex(3);
     }
-    else if (name == "DeskTable") {
+    else if (name == "DiskTable") {
         ui->stackedWidget->setCurrentIndex(4);
     }else if (name == "Desk") {
         ui->stackedWidget->setCurrentIndex(5);
     } else if (name == "Device") {
         ui->stackedWidget->setCurrentIndex(6);
-        updateDeviceView();
     }
 }
 

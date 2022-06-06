@@ -11,7 +11,10 @@
 namespace os {
 CPU::CPU(int time_slot, frmMain* ui)
     : time_slot_(time_slot), cur_tick_(0), current_run_(0), ui_(ui)
-{}
+{
+    connect(this,&CPU::refresh, ui, &frmMain::updateView);
+
+}
 /**
  * @brief CPU::run
  * 线程执行函数，CPU不断循环该周期
@@ -76,10 +79,11 @@ void CPU::run() {
         InteruptManager::Instance().InteruptDetect();
 
         // 更新UI
-        ui_->updateProcView();
-        ui_->updateMemTableView();
-        ui_->updateDiskView();
+//        ui_->updateProcView();
+//        ui_->updateMemTableView();
+//        ui_->updateDiskView();
 //        ui_->updateDeviceView();
+        emit(this->refresh());
     }
 }
 
