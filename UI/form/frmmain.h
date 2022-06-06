@@ -45,7 +45,7 @@ private:
     QStringListModel *m_model;
     void setDeskTable();
     void setMemTable();
-    void createItemsARow(int rowNo, int addr,int size,int used,int free);
+    void createItemsARow(int rowNo, int addr,int size,int used,int free,QString filename = "");
 
 private slots:
     void initForm();

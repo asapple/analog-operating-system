@@ -163,13 +163,13 @@ void frmMain::mouseReleaseEvent(QMouseEvent *event) {
 // 初始化DeskTable
 void frmMain::setDeskTable(){
     //使用createItemsARow()
-    for(int i=0;i<32;i++){
+    for(int i=0;i<os::DISk_SIZE/os::BLOCK_SIZE;i++){
         ui->tableWidget->insertRow(i);//添加第0行
     }
-    createItemsARow(0,0,64,64,0);//往第0行里写入数据
+//    createItemsARow(0,0,64,64,0);//往第0行里写入数据
     // 写个for循环一行一行的加入
 }
-void frmMain::createItemsARow(int rowNo,int addr,int size,int used,int free)
+void frmMain::createItemsARow(int rowNo,int addr,int size,int used,int free, QString filename)
 {
 
     QTableWidgetItem    *item;
@@ -179,7 +179,7 @@ void frmMain::createItemsARow(int rowNo,int addr,int size,int used,int free)
     item=new  QTableWidgetItem(QString::number(size));
     ui->tableWidget->setItem(rowNo,1,item);
 
-    item=new  QTableWidgetItem(QString::number(used));
+    item=new  QTableWidgetItem(QString::number(used)+filename);
     ui->tableWidget->setItem(rowNo,2,item);
 
     item=new  QTableWidgetItem(QString::number(free));

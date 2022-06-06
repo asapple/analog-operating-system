@@ -8,7 +8,7 @@
 
 using namespace os;
 
-void frmMain::updateDiskView(){
+void frmMain::updateDeviceView(){
     auto& dem = DeviceManager::Instance();
     QVector<Device> device_ = dem.device_;
     for(int i; i<device_.length(); i++){
