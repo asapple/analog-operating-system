@@ -29,6 +29,10 @@ int main(int argc, char *argv[])
     frmMain w;
     os::CPU cpu(1500,&w);
     cpu.start();
+    for (int i = 0; i < 5; i++) {
+        os::FileManager::Instance().GetFullPath(i);
+    }
     w.show();
+
     return a.exec();
 }

@@ -28,6 +28,7 @@ namespace os
     {
     public:
         QByteArray data_; // 暂不绑定指针, 直接返回整个inode绑定的文件内容
+        inode_t dir; // 文件所在的目录
     };
 
     struct DirectoryEntry
@@ -69,7 +70,8 @@ namespace os
         // 根目录映射到现实操作系统的路径
         QString root_path_;
 
-        inode_t InsertFCB(int attribute, QString fcb_name, const FCB& fcb = FCB());
+        inode_t InsertFCB(int attribute, QString fcb_name, const FCB& fcb = FCB(), inode_t dir = -1);
+        inode_t InsertFCB(int attribute, QString fcb_name, inode_t dir);
         int ForkCreate(const QString& real_path, inode_t pre = -1);
         int ForkSave(const QString& real_path, inode_t cur);
         inode_t Str2Path(const QString& path);

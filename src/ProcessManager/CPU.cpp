@@ -79,7 +79,7 @@ void CPU::run() {
         ui_->updateProcView();
         ui_->updateMemTableView();
         ui_->updateDiskView();
-        ui_->updateDeviceView();
+//        ui_->updateDeviceView();
     }
 }
 

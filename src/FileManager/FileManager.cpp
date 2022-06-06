@@ -31,9 +31,10 @@ Inode::Inode(int attribute, QString fcb_name,int fcb,int size = 4096, int access
  * @param attribute 文件属性
  * @param fcb_name 文件名
  * @param fcb 文件绑定的FCB
+ * @param dir 普通文件对应的目录
  * @return 插入系统后的inode值
  */
-inode_t FileManager::InsertFCB(int attribute, QString fcb_name, const FCB& fcb)
+inode_t FileManager::InsertFCB(int attribute, QString fcb_name, const FCB& fcb, inode_t dir)
 {
     int fcb_id = fm_fcb_.size();
     fm_fcb_.push_back(fcb);
@@ -42,7 +43,16 @@ inode_t FileManager::InsertFCB(int attribute, QString fcb_name, const FCB& fcb)
     const int block_size = DiskManager::Instance().block_size_;
     fm_inodes_[inode].dnum_ = 1 + (fm_inodes_[inode].size_ + block_size - 1)/block_size ;
     fm_inodes_[inode].dno_ = DiskManager::Instance().RequestDisk(inode, fm_inodes_[inode].dnum_ );
+
+    if (attribute == 1) {
+        fm_fcb_[fm_inodes_[inode].fcb_].dir = dir;
+    }
     return inode;
+}
+
+inode_t FileManager::InsertFCB(int attribute, QString fcb_name, inode_t dir)
+{
+    return InsertFCB(attribute, fcb_name, FCB(),dir);
 }
 /**
  * @brief FileManager::ForkCreate
@@ -83,7 +93,7 @@ inode_t FileManager::ForkCreate(const QString& real_path, inode_t pre)
         } else {
            qDebug() << "[FileSystem] Init Error: File '" << file_path <<"' can't read.";
         }
-        inode_t ino = InsertFCB(1, file_info->fileName(),fcb);
+        inode_t ino = InsertFCB(1, file_info->fileName(),fcb, fcb_no);
         fm_fcb_[fcb_no].files_.push_back(DirectoryEntry(ino, file_info->fileName()));
     }
     // 递归目录读入
@@ -347,7 +357,7 @@ int FileManager::MakeFile(QString file_name)
             return -3;
         }
     }
-    inode_t inode = InsertFCB(1, file_name);
+    inode_t inode = InsertFCB(1, file_name,fcb_no);
     if (inode < 0) {
         return -4;
     }
@@ -490,10 +500,16 @@ QString FileManager::GetFullPath(inode_t inode)
     QString file_name;
     inode_t  cur = inode;
     while (cur != 0) {
-        file_name.push_front("/");
         Inode ino = fm_inodes_[cur];
+        if (ino.attribute_ == 0) {
+            file_name.push_front("/");
+        }
         file_name.push_front(ino.fcb_name_);
-        cur = fm_fcb_[ino.fcb_].pre.inode_;
+        if (ino.attribute_ == 1) {
+            cur = fm_fcb_[ino.fcb_].dir;
+        } else {
+            cur = fm_fcb_[ino.fcb_].pre.inode_;
+        }
     }
     file_name.push_front("/");
     return file_name;
