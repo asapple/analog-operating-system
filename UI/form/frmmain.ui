@@ -115,26 +115,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="btnConfig">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Memory</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../other/main.qrc">
-             <normaloff>:/image/main_config.png</normaloff>:/image/main_config.png</iconset>
-           </property>
-           <property name="toolButtonStyle">
-            <enum>Qt::ToolButtonTextUnderIcon</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QToolButton" name="MemTabletoolButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
@@ -187,29 +167,6 @@
            </property>
            <property name="text">
             <string>DeskTable</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../other/main.qrc">
-             <normaloff>:/image/main_person.png</normaloff>:/image/main_person.png</iconset>
-           </property>
-           <property name="toolButtonStyle">
-            <enum>Qt::ToolButtonTextUnderIcon</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="btnHelp">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Desk</string>
            </property>
            <property name="icon">
             <iconset resource="../other/main.qrc">

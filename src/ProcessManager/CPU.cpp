@@ -6,6 +6,7 @@
 #include "include/ProcessManager/Interupt.h"
 #include "include/MemoryManager/MemoryManager.h"
 #include "include/DeviceManager/DeviceManager.h"
+#include "UI/form/frmmain.h"
 
 namespace os {
 CPU::CPU(int time_slot, frmMain* ui)

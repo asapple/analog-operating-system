@@ -9,8 +9,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    UI/form/DeviceView.cpp \
-    UI/form/DiskView.cpp \
+#    UI/form/DeviceView.cpp \
+#    UI/form/DiskView.cpp \
     src/DeviceManager/DiskManager.cpp \
     src/DeviceManager/DeviceManager.cpp \
     src/ProcessManager/CPU.cpp \
@@ -18,11 +18,6 @@ SOURCES += \
     src/ProcessManager/ProcessManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
     src/FileManager/FileManager.cpp \
-#    src/Test/MemoryTest.cpp \
-    #src/Test/ProcessTest.cpp \
-    #src/Test/ProcessMemoryTest.cpp \
-#    src/Test/DeviceTest.cpp \
-#    src/Test/DiskTest.cpp \
     src/Test/IntegretedTest.cpp \
 #    src/main.cpp
 
