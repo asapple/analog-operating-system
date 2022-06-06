@@ -27,6 +27,14 @@ public:
      * @brief 更新内存位图视图
      */
     void updateMemTableView();
+    /**
+     * @brief 更新磁盘位图视图
+     */
+    void updateDiskView();
+    /**
+     * @brief 更新设备视图
+     */
+    void updateDeviceView();
     ~frmMain();
 
 protected:
