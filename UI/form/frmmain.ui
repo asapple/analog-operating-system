@@ -340,7 +340,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="shell_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -798,7 +798,7 @@
         </layout>
        </item>
        <item row="6" column="4">
-        <widget class="QTableWidget" name="device0table">
+        <widget class="QTableWidget" name="device2table">
          <column>
           <property name="text">
            <string>进程号</string>
@@ -826,7 +826,7 @@
         </widget>
        </item>
        <item row="6" column="0">
-        <widget class="QTableWidget" name="device2table">
+        <widget class="QTableWidget" name="device0table">
          <column>
           <property name="text">
            <string>进程号</string>
