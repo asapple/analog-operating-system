@@ -15,6 +15,8 @@ enum class InsType {
     ACCESS = 'A',
     MEMORY = 'M',
     PRIORITY   = 'P',
+    SEM_P = 'p',
+    SEM_V  = 'v',
     QUIT = 'Q',
 };
 /**

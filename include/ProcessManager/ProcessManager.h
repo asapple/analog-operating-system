@@ -36,6 +36,8 @@ class ProcessManager {
 private:
     // 最大进程数
     int kMaxProcessNum_;
+    // 最大信号量值
+    int kMaxSemNum_;
     // 是否为抢占式
     bool is_preemptive_;
     // 当前调度器
@@ -50,10 +52,13 @@ private:
     tick_t cur_time_;
     // 上次调度的索引
     int last_index_;
+    // 信号量资源
+    QVector<sem_t> semaphore_;
+    QVector<QList<pid_t>> sem_list_;
 
-    ProcessManager(int kMaxProcessNum, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
+    ProcessManager(int kMaxProcessNum, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS, int kMaxSemNum = 10);
 public:
-    static ProcessManager& Instance(int kMaxProcessNum = 0, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS);
+    static ProcessManager& Instance(int kMaxProcessNum = 0, bool is_preemptive = false, SchedulerType type = SchedulerType::FCFS, int kMaxSemNum = 10);
 
     inline int pushProcess(pid_t pid) { return scheduler_->PushProcess(pid);}
     inline pid_t PollProcess() { return scheduler_->PollProcess(); };
@@ -64,6 +69,18 @@ public:
     inline const tick_t GetCurTime() {return cur_time_;}
     inline const QList<pid_t> GetWaitQueue() { return wait_queue_; }
     inline bool RemoveWaitQueue(pid_t pid) { return wait_queue_.removeOne(pid); }
+    inline const sem_t GetSemVal(int sem_num) {
+        if (sem_num < kMaxProcessNum_)
+            return semaphore_[sem_num];
+        return INVALID_SEM;
+    }
+    inline const QString GetFileName(pid_t pid) {
+        return process_list_[pid].file_name_;
+    }
+
+    bool P(pid_t pid, int sem_num);
+    bool V(pid_t pid, int sem_num);
+
     void UpdateTime();
 
     int CheckKilled();

@@ -14,11 +14,14 @@ namespace os {
  * @param is_preemptive 就绪队列调度是否抢占
  * @param type 就绪队列调度的方法
  */
-ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, SchedulerType type):
+ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, SchedulerType type, int kMaxSemNum):
     kMaxProcessNum_(kMaxProcessNum),
+    kMaxSemNum_(kMaxSemNum),
     is_preemptive_(is_preemptive),
     process_list_(kMaxProcessNum+1),
-    last_index_(0)
+    last_index_(0),
+    semaphore_(kMaxSemNum),
+    sem_list_(kMaxSemNum)
 {
     if (type == SchedulerType::FCFS) {
         scheduler_.reset(static_cast<Scheduler*>(new FCFSScheduler));
@@ -36,8 +39,8 @@ ProcessManager::ProcessManager(int kMaxProcessNum, bool is_preemptive, Scheduler
  * @param type 就绪队列调度的方法，仅在初始化时设置
  * @return 进程管理系统单例
  */
-ProcessManager& ProcessManager::Instance(int kMaxProcessNum, bool is_preemptive, SchedulerType type) {
-    static ProcessManager instance(kMaxProcessNum, is_preemptive, type);
+ProcessManager& ProcessManager::Instance(int kMaxProcessNum, bool is_preemptive, SchedulerType type, int kMaxSemNum) {
+    static ProcessManager instance(kMaxProcessNum, is_preemptive, type, kMaxSemNum);
     return instance;
 }
 /**
@@ -309,4 +312,35 @@ const QList<pid_t> PriorityScheduler::GetReadyQueue() {
     queue.append(ready_queue_.begin().value());
     return queue;
 }
+
+bool ProcessManager::P(pid_t pid, int sem_num) {
+    if (sem_num >= kMaxSemNum_) {
+        return false;
+    }
+    if (semaphore_[sem_num] <= 0) {
+        sem_list_[sem_num].append(pid);
+        process_list_[pid].state_ = ProcessState::WAIT;
+        wait_queue_.push_back(pid);
+        qDebug() <<"[" <<  pid << "]: wait for semaphore" << sem_num;
+    }
+    semaphore_[sem_num]--;
+    return true;
+}
+bool ProcessManager::V(pid_t pid, int sem_num) {
+    if (sem_num >= kMaxSemNum_) {
+        return false;
+    }
+    if (semaphore_[sem_num] < 0) {
+        pid_t wait_pid = sem_list_[sem_num].front();
+        process_list_[wait_pid].state_ = ProcessState::READY;
+        pushProcess(wait_pid);
+        RemoveWaitQueue(wait_pid);
+        qDebug() <<"[" <<  pid << "]: signal semaphore" << sem_num;
+        qDebug() << "[" << wait_pid << "]" << "wakeup";
+        sem_list_.pop_front();
+    }
+    semaphore_[sem_num]++;
+    return true;
+}
+
 }

@@ -18,7 +18,7 @@ namespace ui {
         SIZE
     };
 }
-static void updateProcessList(QTableWidget* table, int rowno, PCB& pcb);
+static void updateProcessList(QTableWidget* table, int rowno, PCB pcb);
 /**
  * @brief frmMain::updateProcView
  * 获取当前的进程状态数据，并用最新数据进程界面视图
@@ -77,7 +77,7 @@ void frmMain::updateProcView()
     }
 }
 
-static void updateProcessList(QTableWidget* table, int rowno, PCB& pcb)
+static void updateProcessList(QTableWidget* table, int rowno, PCB pcb)
 {
     table->setItem(rowno, ui::ProcessColumn::PID, new QTableWidgetItem(QString::number(pcb.pid_)));
     table->setItem(rowno, ui::ProcessColumn::PPID, new QTableWidgetItem(QString::number(pcb.ppid_)));

@@ -90,6 +90,8 @@ void CPU::run() {
 int CPU::ExecuteInstruction(PCB& pcb)
 {
     int size;
+    int sem_num;
+    sem_t sem_val;
     pid_t child;
     switch (pcb.ir_.type) {
          // 访存指令
@@ -135,6 +137,22 @@ int CPU::ExecuteInstruction(PCB& pcb)
             // TODO: 错误处理
         } else {
             pcb.size_ += pcb.ir_.op;
+        }
+        break;
+        // 进程同步P操作
+    case InsType::SEM_P:
+        sem_num = pcb.ir_.op;
+        if (!ProcessManager::Instance().P(pcb.pid_, sem_num)) {
+            pcb.state_ = ProcessState::KILLED;
+            return -1;
+        }
+        break;
+        // 进程同步V操作
+    case InsType::SEM_V:
+        sem_num = pcb.ir_.op;
+        if (!ProcessManager::Instance().V(pcb.pid_, sem_num)) {
+            pcb.state_ = ProcessState::KILLED;
+            return -1;
         }
         break;
         // 进程退出指令

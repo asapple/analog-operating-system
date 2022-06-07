@@ -1,6 +1,7 @@
 #include "include/MemoryManager/MemoryManager.h"
 #include "include/ProcessManager/Instruction.h"
 #include "include/FileManager/FileManager.h"
+#include "include/ProcessManager/ProcessManager.h"
 #include <QDebug>
 using namespace os;
 
@@ -271,11 +272,12 @@ int MemoryManager::GetCode(pid_t pid, size_t virt_addr, QByteArray& content)
     int visit_error = pt_iter->VisitCode(page, frame);
     str = QString("[GetCode]  pid:%1  find page:%2  result:%3").arg(QString::number(pid), QString::number(page), QString::number(visit_error));
     PrintInfo(str);
+    QString file_name = ProcessManager::Instance().GetFileName(pid);
     if (visit_error == 0) { // 指令已在内存中
         CopyBytes(code, 0, memory, frame*MEMORY_PAGE_SIZE+offset, MEMORY_INSTR_SIZE);
         content = code;
     } else if (visit_error == 1) { // 指令不在内存中，已回收一个牺牲页的物理帧
-        int read_error = ReadBytes(exec_name, page, offset, MEMORY_INSTR_SIZE, code);
+        int read_error = ReadBytes(file_name, page, offset, MEMORY_INSTR_SIZE, code);
         if (read_error == 0) {// 复制完全成功，返回指令
             CopyBytes(memory, frame*MEMORY_PAGE_SIZE+offset, code, 0, MEMORY_PAGE_SIZE); // 覆盖牺牲帧
             content = code;
@@ -292,7 +294,7 @@ int MemoryManager::GetCode(pid_t pid, size_t virt_addr, QByteArray& content)
             pt_iter->SetMax(pt_iter->GetNow(CODE), CODE); // 将代码页上限设置为当前有效页数
             GetCode(pid, virt_addr, content); // 重新执行本函数
         } else { // 内存充足，调页后加入页表
-            int read_error = ReadBytes(exec_name, page, offset, MEMORY_INSTR_SIZE, code);
+            int read_error = ReadBytes(file_name, page, offset, MEMORY_INSTR_SIZE, code);
             if (read_error == 0) {// 复制完全成功，返回指令
                 bitmap[new_frame[0]] = pid; // 更改位图，标识占用
                 CopyBytes(memory, new_frame[0]*MEMORY_PAGE_SIZE+offset, code, 0, MEMORY_INSTR_SIZE); // 写入新帧

@@ -9,6 +9,10 @@ using pid_t = int; // Process ID
 using dev_t = int; // Device ID
 using priority_t = int; // Priority
 using tick_t = int;
+using sem_t = int;
+
+inline constexpr int INVALID_SEM = -2147483647;
+
 inline constexpr int MEMORY_CODE_INIT =  2; // 进程初始化时分配的代码页数量
 inline constexpr int MEMORY_CODE_MAX = 3; // 进程所能拥有的最大代码页数量
 inline constexpr int MEMORY_DATA_MAX  = 3; // 进程所能拥有的最大数据页数量
