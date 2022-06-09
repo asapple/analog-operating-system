@@ -331,7 +331,14 @@ void frmMain::on_cmd_lineEdit_returnPressed()
     }else if (cmd[0]=="mkfile") {
         // 调用文件系统的FileManager::MakeFile()方法
         QString str="create file success";
-        if (os::FileManager::Instance().MakeFile(cmd[1]) < 0) {
+        int size = 0;
+        if (cmd.size() > 2) {
+            bool isOk;
+            size = cmd[2].toInt(&isOk);
+            if (!isOk)
+                size = 0;
+        }
+        if (os::FileManager::Instance().MakeFile(cmd[1],size) < 0) {
             str = "create file error";
         }
         ui->echo_textBrowser->append(str);

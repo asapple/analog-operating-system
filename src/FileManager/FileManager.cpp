@@ -39,9 +39,9 @@ inode_t FileManager::InsertFCB(int attribute, QString fcb_name, const FCB& fcb, 
     int fcb_id = fm_fcb_.size();
     fm_fcb_.push_back(fcb);
     inode_t inode = fm_inodes_.size();
-    fm_inodes_.push_back(Inode(attribute, fcb_name, fcb_id, fcb.data_.size(), umask_));
+    fm_inodes_.push_back(Inode(attribute, fcb_name, fcb_id, fcb.data_.size() + 1, umask_));
     const int block_size = DiskManager::Instance().block_size_;
-    fm_inodes_[inode].dnum_ = 1 + (fm_inodes_[inode].size_ + block_size - 1)/block_size ;
+    fm_inodes_[inode].dnum_ = 1 + (fm_inodes_[inode].size_ - 1)/block_size ;
     fm_inodes_[inode].dno_ = DiskManager::Instance().RequestDisk(inode, fm_inodes_[inode].dnum_ );
 
     if (attribute == 1) {
@@ -332,7 +332,7 @@ int FileManager::ChangeDirectory(QString path)
  * @return -3 文件名已存在
  * @return -4 创建文件失败
  */
-int FileManager::MakeFile(QString file_name)
+int FileManager::MakeFile(QString file_name, int size)
 {
     inode_t pre = cwd_;
     if (file_name.length() == 0)
@@ -357,7 +357,10 @@ int FileManager::MakeFile(QString file_name)
             return -3;
         }
     }
-    inode_t inode = InsertFCB(1, file_name,fcb_no);
+//    inode_t inode = InsertFCB(1, file_name,fcb_no);
+    FCB fcb;
+    fcb.data_.fill('t',size);
+    inode_t inode = InsertFCB(1, file_name, fcb,fcb_no);
     if (inode < 0) {
         return -4;
     }

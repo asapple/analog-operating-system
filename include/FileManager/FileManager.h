@@ -84,7 +84,7 @@ namespace os
 
         int List(QVector<QString>& files, QVector<QString>& dirs, QString  path = ".");                                              // ok
         int ChangeDirectory(QString path);          // ok
-        int MakeFile(QString file_name);                      // ok
+        int MakeFile(QString file_name, int size = 0);                      // ok
         int MakeDirectory(QString directory_name);            // ok
         int RemoveFile(QString file_name);                    // ok
         int RemoveMyDirectory(QString directory_name);          // ok
