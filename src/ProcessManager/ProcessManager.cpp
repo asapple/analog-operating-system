@@ -274,8 +274,16 @@ pid_t PriorityScheduler::PollProcess() {
     if (ready_queue_.empty()) {
         return -1;
     }
-    auto it = ready_queue_.last();
+    auto& it = ready_queue_.last();
     pid_t pid = it.front();
+    pid_t pid_run = ProcessManager::Instance().GetRunProcess();
+    if (pid_run != 0) {
+        int pr_run = ProcessManager::Instance().GetPCB(pid_run).priority_;
+        int pr = ProcessManager::Instance().GetPCB(pid).priority_;
+        if (pr_run > pr) {
+            return -1;
+        }
+    }
     it.pop_front();
     if (it.empty()) {
         ready_queue_.remove(ready_queue_.lastKey());
@@ -306,6 +314,9 @@ int PriorityScheduler::RemoveProcess(pid_t pid)
  */
 const QList<pid_t> PriorityScheduler::GetReadyQueue() {
     QList<pid_t> queue;
+    if (ready_queue_.empty()) {
+        return queue;
+    }
     for (auto it = ready_queue_.end()-1; it != ready_queue_.begin(); it--) {
         queue.append(it.value());
     }
@@ -337,7 +348,7 @@ bool ProcessManager::V(pid_t pid, int sem_num) {
         RemoveWaitQueue(wait_pid);
         qDebug() <<"[" <<  pid << "]: signal semaphore" << sem_num;
         qDebug() << "[" << wait_pid << "]" << "wakeup";
-        sem_list_.pop_front();
+        sem_list_[sem_num].pop_front();
     }
     semaphore_[sem_num]++;
     return true;

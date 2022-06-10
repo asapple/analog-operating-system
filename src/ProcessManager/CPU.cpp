@@ -36,7 +36,7 @@ void CPU::run() {
             }
             next_run = pm.PollProcess();
             // 成功进行调度，则换下当前进程，更换为下一个进程
-            if (next_run != -1) {
+            if (next_run != -1 && next_run != current_run_) {
                 // 该进程被抢占，则需要加入就绪队列
                 if (last_pcb.state_ == ProcessState::RUNNING) {
                     last_pcb.state_ = ProcessState::READY;

@@ -2,8 +2,17 @@
 #include "include/Common/Common.h"
 #include "include/ProcessManager/CPU.h"
 #include "include/ProcessManager/ProcessManager.h"
+#include "include/ProcessManager/Interupt.h"
+#include "include/FileManager/FileManager.h"
 #include <QApplication>
 #include <QDebug>
+
+void Init()
+{
+    os::ProcessManager::Instance(100,true,os::SchedulerType::PRI);
+    os::InteruptManager::Instance().SetInterupt(true);
+    os::FileManager::Instance("files");
+}
 
 int main(int argc, char *argv[])
 {
@@ -16,8 +25,12 @@ int main(int argc, char *argv[])
     QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
 #endif
 
+    Init();
     QApplication a(argc, argv);
     frmMain w;
+    os::CPU cpu(1500,&w);
+    cpu.start();
     w.show();
+
     return a.exec();
 }

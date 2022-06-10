@@ -16,8 +16,8 @@ SOURCES += \
     src/ProcessManager/ProcessManager.cpp \
     src/MemoryManager/MemoryManager.cpp \
     src/FileManager/FileManager.cpp \
-    src/Test/IntegretedTest.cpp \
-#    src/main.cpp
+#    src/Test/IntegretedTest.cpp \
+    src/main.cpp
 
 HEADERS += \
     include/Common/Common.h \
