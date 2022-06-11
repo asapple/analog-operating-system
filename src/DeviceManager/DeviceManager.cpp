@@ -42,6 +42,7 @@ namespace os
                 now_queue_.erase(i);
                 if (i == now_queue_.begin())
                     isInterupt_ = 1; //若删除的pid为当前设备正在执行进程，产生中断告诉CPU已经完成当前任务
+                    InteruptManager::Instance().InteruptRequest(Interupt(dev_num_, now_queue_.begin()->pid_, priority_));
                 return 0;            //删除成功返回0
             }
         }
@@ -65,6 +66,9 @@ namespace os
                     state_ = IDLE; //若执行完成后队列为空 改变设备状态；
             }
                 qDebug() << "Queue  pid = "<< now_queue_.begin()->pid_ <<", time = "  << now_queue_.begin()->time_ <<"; state = " << state_ << " dev_num = " << dev_num_ ;
+        }
+        if (now_queue_.empty()){
+            state_ = IDLE; //若执行完成后队列为空 改变设备状态；
         }
         return 0;
     }
