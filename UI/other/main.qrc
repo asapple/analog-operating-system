@@ -8,5 +8,11 @@
         <file>image/main_help.png</file>
         <file>image/main_main.png</file>
         <file>image/main_person.png</file>
+        <file>image/cpu.svg</file>
+        <file>image/filetype-sh.svg</file>
+        <file>image/hdd.svg</file>
+        <file>image/usb-micro.svg</file>
+        <file>image/windows.svg</file>
+        <file>image/memory.svg</file>
     </qresource>
 </RCC>
