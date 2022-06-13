@@ -309,7 +309,7 @@ void frmMain::on_cmd_lineEdit_returnPressed()
         ui->echo_textBrowser->clear();
     }else if (cmd[0]=="rm") {
         // 调用文件系统的FileManager::RemoveFile()方法
-        QString str="";
+        QString str="remove file suscess";
         if (os::FileManager::Instance().RemoveFile(cmd[1]) < 0) {
             str.append("remove file error");
         }
